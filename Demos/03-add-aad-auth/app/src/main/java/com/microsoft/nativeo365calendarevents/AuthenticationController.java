@@ -34,6 +34,10 @@ public class AuthenticationController {
     return INSTANCE;
   }
 
+  public static synchronized void resetInstance() {
+    INSTANCE = null;
+  }
+
   public String getAccessToken() {
     return mAuthResult.getAccessToken();
   }
@@ -45,6 +49,12 @@ public class AuthenticationController {
   public void doAcquireToken(Activity activity, final MSALAuthenticationCallback msalCallback) {
     mActivityCallback = msalCallback;
     mApplication.acquireToken(activity, Constants.SCOPES, getAuthInteractiveCallback());
+  }
+
+  public void signout() {
+    mApplication.remove(mAuthResult.getUser());
+    // Reset the AuthenticationManager object
+    AuthenticationController.resetInstance();
   }
 
   private AuthenticationCallback getAuthInteractiveCallback() {

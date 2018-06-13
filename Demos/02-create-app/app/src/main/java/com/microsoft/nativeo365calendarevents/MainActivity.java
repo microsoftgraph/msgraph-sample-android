@@ -45,13 +45,24 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onSignout();
+      }
+    });
+
     setPanelVisibility(true, false, false);
   }
 
   private void onSignin() {
     Toast.makeText(MainActivity.this, "Hello <user>!", Toast.LENGTH_LONG).show();
 
-    setPanelVisibility(false,true,false);
+    setPanelVisibility(false, true, false);
+  }
+
+  private void onSignout() {
+    setPanelVisibility(true, false, false);
   }
 
   private void onLoadEvents() {

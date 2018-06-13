@@ -155,7 +155,18 @@ The first step is to create the shell of the user experience; creating a workabl
                 android:paddingBottom="5dp"
                 android:paddingLeft="35dp"
                 android:paddingRight="35dp"
-                />
+              />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign out"
+                android:id="@+id/btn_signOut"
+                android:layout_gravity="center"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="35dp"
+                android:paddingRight="35dp"
+              />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -215,6 +226,10 @@ The first step is to create the shell of the user experience; creating a workabl
           setPanelVisibility(false,true,false);
         }
 
+        private void onSignout() {
+          setPanelVisibility(true, false, false);
+        }
+
         private void onLoadEvents() {
           Toast.makeText(MainActivity.this, 
             "Successfully loaded events from Office 365 calendar", 
@@ -244,6 +259,13 @@ The first step is to create the shell of the user experience; creating a workabl
           @Override
           public void onClick(View view) {
             onSignin();
+          }
+        });
+
+        (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            onSignout();
           }
         });
 
@@ -414,6 +436,10 @@ With the application created, now extend it to support authentication with Azure
           }
           return INSTANCE;
         }
+
+        public static synchronized void resetInstance() {
+          INSTANCE = null;
+        }
         ```
 
     1. Add the following code to the `AuthenticationController` class to provide options for getting in instance of the Azure AD public client and access token:
@@ -460,6 +486,16 @@ With the application created, now extend it to support authentication with Azure
               }
             }
           };
+        }
+        ```
+
+    1. Add the following code to the `AuthenticationController` class to sign out of the application:
+
+        ```java
+        public void signout() {
+          mApplication.remove(mAuthResult.getUser());
+          // Reset the AuthenticationManager object
+          AuthenticationController.resetInstance();
         }
         ```
 
@@ -515,13 +551,20 @@ With the application created, now extend it to support authentication with Azure
         //endregion
         ```
 
-1. Wire up the signin button to the authentication process:
+1. Wire up the signin and signout buttons to the authentication process:
     1. Replace the contents of the `onSignin()` method to the following code:
 
     ```java
     private void onSignin() {
       AuthenticationController authController = AuthenticationController.getInstance(this);
       authController.doAcquireToken(this, this);
+    }
+
+    private void onSignout() {
+      AuthenticationController authController = AuthenticationController.getInstance(this);
+      authController.signout();
+
+      setPanelVisibility(true, false, false);
     }
     ```
 

@@ -53,12 +53,26 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
       }
     });
 
+    (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onSignout();
+      }
+    });
+
     setPanelVisibility(true, false, false);
   }
 
   private void onSignin() {
     AuthenticationController authController = AuthenticationController.getInstance(this);
     authController.doAcquireToken(this, this);
+  }
+
+  private void onSignout() {
+    AuthenticationController authController = AuthenticationController.getInstance(this);
+    authController.signout();
+
+    setPanelVisibility(true, false, false);
   }
 
   private void onLoadEvents() {
