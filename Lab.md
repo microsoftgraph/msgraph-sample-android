@@ -1,4 +1,4 @@
-# Build Android native applications with the Microsoft Graph
+# Build Android native apps with the Microsoft Graph Android SDK
 
 In this lab you will create a new Android native application with Android Studio that will display events in your Office 365 calendar using an Azure AD application with the Microsoft Graph Android SDK & Microsoft Authentication Library (MSAL).
 
