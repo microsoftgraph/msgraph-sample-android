@@ -15,6 +15,10 @@ In this lab you will create an Android application using the Azure AD v2 authent
 * [Extend the Android App for Azure AD Authentication](./Demos/03-add-aad-auth)
 * [Integrate Microsoft Graph into the Application](./Demos/04-add-msgraph)
 
+## Watch the Module
+
+This module has been recorded and is available in the Office Development YouTube channel: [Build Android native apps with the Microsoft Graph Android SDK](https://youtu.be/Yk0FMwXanck)
+
 ## Contributors
 
 |        Roles         |                        Author(s)                        |
@@ -26,6 +30,7 @@ In this lab you will create an Android application using the Azure AD v2 authent
 
 | Version |        Date        |                    Comments                    |
 | ------- | ------------------ | ---------------------------------------------- |
+| 1.1     | June 28, 2018      | Added screencast.                              |
 | 1.1     | June 22, 2018      | Rewritten to use latest guidance.              |
 | 1.0     | ~November 24, 2017 | Add Microsoft Graph related product breakouts. |
 
