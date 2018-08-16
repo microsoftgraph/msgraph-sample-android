@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.microsoft.graph:microsoft-graph:0.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.microsoft.graph/microsoft-graph/0.1.0/bc88841ed28b02137beddd32a7ad6d9f9fb1de14/microsoft-graph-0.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.microsoft.graph/microsoft-graph/0.1.0/bc0ee3ababdc3d0a2920db9e8def0eb039eaa23f/microsoft-graph-0.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.j2objc:j2objc-annotations:1.1@jar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/m2repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
