@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
 
   @Override
   public void onMsalAuthCancel() {
-    Log.d(TAG, "Cancel authenticated");
+      Log.d(TAG, "Cancel authenticated");
   }
   //endregion
 

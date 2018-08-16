@@ -6,8 +6,8 @@ import android.util.Log;
 import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.core.DefaultClientConfig;
 import com.microsoft.graph.core.IClientConfig;
-import com.microsoft.graph.extensions.GraphServiceClient;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.requests.extensions.GraphServiceClient;
+import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.http.IHttpRequest;
 
 public class MSGraphServiceClientManager implements IAuthenticationProvider {
@@ -44,7 +44,7 @@ public class MSGraphServiceClientManager implements IAuthenticationProvider {
   public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
     if (graphClient == null){
       IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-      graphClient = new GraphServiceClient.Builder().fromConfig(clientConfig).buildClient();
+      graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
     }
     return graphClient;
   }
