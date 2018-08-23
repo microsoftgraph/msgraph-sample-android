@@ -1,6 +1,6 @@
 # Integrate Microsoft Graph into the Application
 
-The last step is to incorporate the Microsoft Graph into the application. For this application, you will use the Microsoft Graph Android SDK.
+The last step is to incorporate the Microsoft Graph into the application. For this application, you will use the Microsoft Graph Java SDK.
 
 > This demo builds off the final product from the previous demo.
 
@@ -9,10 +9,17 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following code to the `dependencies` section, immediately after the previously added dependencies:
 
         ```gradle
-        implementation 'com.microsoft.graph:msgraph-sdk-android:1.3.2'
+        implementation 'com.microsoft.graph:microsoft-graph:0.1.+'
         ```
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
+        
+        if cannot reslove the package, add the following code to the project build.gradle file 'allprojects' section:
+        
+        maven {
+            url "https://dl.bintray.com/microsoftgraph/Maven"
+        }
+  
 
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
@@ -31,8 +38,8 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         import com.microsoft.graph.authentication.IAuthenticationProvider;
         import com.microsoft.graph.core.DefaultClientConfig;
         import com.microsoft.graph.core.IClientConfig;
-        import com.microsoft.graph.extensions.GraphServiceClient;
-        import com.microsoft.graph.extensions.IGraphServiceClient;
+        import com.microsoft.graph.requries.extensions.GraphServiceClient;
+        import com.microsoft.graph.models.extensions.IGraphServiceClient;
         import com.microsoft.graph.http.IHttpRequest;
         ```
 
@@ -71,7 +78,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
           public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
             if (graphClient == null){
               IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-              graphClient = new GraphServiceClient.Builder().fromConfig(clientConfig).buildClient();
+              graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
             }
             return graphClient;
           }
@@ -90,10 +97,10 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         import com.microsoft.graph.concurrency.ICallback;
         import com.microsoft.graph.core.ClientException;
         import com.microsoft.graph.extensions.Event;
-        import com.microsoft.graph.extensions.IEventCollectionPage;
-        import com.microsoft.graph.extensions.IEventCollectionRequest;
-        import com.microsoft.graph.extensions.IGraphServiceClient;
-        import com.microsoft.graph.options.Option;
+        import com.microsoft.graph.models.extensions.IEventCollectionPage;
+        import com.microsoft.graph.requests.extensions.IEventCollectionRequest;
+        import com.microsoft.graph.requests.extensions.IGraphServiceClient;
+        import com.microsoft.graph.models.options.Option;
         import com.microsoft.graph.options.QueryOption;
 
         import java.util.ArrayList;
@@ -116,7 +123,10 @@ The last step is to incorporate the Microsoft Graph into the application. For th
           public SettableFuture<List<String>> getEvents() {
             final SettableFuture<List<String>> result = SettableFuture.create();
 
-            IEventCollectionRequest request = graphClient.getMe().getEvents().buildRequest(Arrays.asList(new Option[]{
+            IEventCollectionRequest request = graphClient
+                                              .me()
+                                              .events()
+                                              .buildRequest(Arrays.asList(new Option[]{
                     new QueryOption("$select", "subject,start,end"),
                     new QueryOption("$top", "20"),
                     new QueryOption("$skip", "0")
