@@ -1,8 +1,8 @@
-# Microsoft Graph Training Module - Build Android native apps with the Microsoft Graph Android SDK
+# Microsoft Graph Training Module - Build Android native apps with the Microsoft Graph Java SDK
 
 This module will introduce you to working with the Microsoft Graph SDK to access data in Office 365 by building native mobile Android applications.
 
-## Lab - Build Android native apps with the Microsoft Graph Android SDK
+## Lab - Build Android native apps with the Microsoft Graph Java SDK
 
 In this lab you will create an Android application using the Azure AD v2 authentication endpoint and the Microsoft Authentication Library (MSAL) to access data in Office 365 using the Microsoft Graph.
 
@@ -17,7 +17,7 @@ In this lab you will create an Android application using the Azure AD v2 authent
 
 ## Watch the Module
 
-This module has been recorded and is available in the Office Development YouTube channel: [Build Android native apps with the Microsoft Graph Android SDK](https://youtu.be/Yk0FMwXanck)
+This module has been recorded and is available in the Office Development YouTube channel: [Build Android native apps with the Microsoft Graph Java SDK](https://youtu.be/Yk0FMwXanck)
 
 ## Contributors
 
