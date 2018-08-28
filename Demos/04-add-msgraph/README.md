@@ -4,7 +4,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 
 > This demo builds off the final product from the previous demo.
 
-1. Add the required Microsoft Graph Android SDK dependencies to the project using Gradle:
+1. Add the required Microsoft Graph Java SDK dependencies to the project using Gradle:
     1. Open the **Gradle Scripts > build.gradle (Module: app)** file.
     1. Add the following code to the `dependencies` section, immediately after the previously added dependencies:
 
@@ -20,7 +20,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
             ```gradle
               maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
             ```
-          add the following code to the project /app/build.gradle file android section
+          and add the following code to the project /app/build.gradle file android section
 
           ```gradle
               packagingOptions{
