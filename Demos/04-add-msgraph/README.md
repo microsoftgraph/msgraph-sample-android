@@ -16,18 +16,18 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         
         1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
 
-          1. Add the following code to the project build.gradle file 'allprojects' section:
+            1. Add the following code to the project build.gradle file 'allprojects' section:
 
-            ```gradle
-              maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
-            ```
-          1. Add the following code to the project /app/build.gradle file android section
+              ```gradle
+                maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
+              ```
+            1. Add the following code to the project /app/build.gradle file android section
 
-            ```gradle
-                packagingOptions{
-                    pickFirst 'META-INF/jersey-module-version'
-                }
-            ```
+              ```gradle
+                  packagingOptions{
+                      pickFirst 'META-INF/jersey-module-version'
+                  }
+              ```
 
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
