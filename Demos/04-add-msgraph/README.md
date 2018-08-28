@@ -21,7 +21,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
               ```gradle
                 maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
               ```
-            1. Add the following code to the project /app/build.gradle file android section
+            2. Add the following code to the project /app/build.gradle file android section
 
               ```gradle
                   packagingOptions{
