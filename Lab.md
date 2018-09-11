@@ -609,18 +609,22 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         ```
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
-      if cannot reslove the package, add the following code to the project build.gradle file 'allprojects' section:
+       1. When Sync throws an error said cannot find the microsoft-graph or reslove the package
 
-        ```gradle
-          maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
-        ```
-      add the following code to the project /app/build.gradle file android section
+          1. Add the following code to the project build.gradle file 'allprojects' section:
 
-      ```gradle
-          packagingOptions{
-              pickFirst 'META-INF/jersey-module-version'
-          }
-      ```
+              ```gradle
+                maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
+              ```
+        2. When execution failed for task ':app:transformResourcesWithMergeJavaResForDebug'.
+
+            1. Add the following code to the project /app/build.gradle file android section
+              
+              ```gradle
+                  packagingOptions{
+                      pickFirst 'META-INF/jersey-module-version'
+                  }
+              ```
 
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
@@ -714,48 +718,48 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following members to implement the `MSGraphServiceController` class:
 
         ```java
-        public class MSGraphServiceController {
-          private final static String TAG = MSGraphServiceController.class.getSimpleName();
-          private final IGraphServiceClient graphClient;
-          final List<String> events = new ArrayList<>();
+          public class MSGraphServiceController {
+            private final static String TAG = MSGraphServiceController.class.getSimpleName();
+            private final IGraphServiceClient graphClient;
+            final List<String> events = new ArrayList<>();
 
-          public MSGraphServiceController(Context context) {
-            graphClient = MSGraphServiceClientManager.getInstance(context).getGraphServiceClient();
-          }
+            public MSGraphServiceController(Context context) {
+              graphClient = MSGraphServiceClientManager.getInstance(context).getGraphServiceClient();
+            }
 
-          public SettableFuture<List<String>> getEvents() {
-            final SettableFuture<List<String>> result = SettableFuture.create();
+            public SettableFuture<List<String>> getEvents() {
+              final SettableFuture<List<String>> result = SettableFuture.create();
 
-            IEventCollectionRequest request = graphClient
-                                          .me()
-                                          .events()
-                                          .buildRequest(
-              Arrays.asList(new Option[]{
-                new QueryOption("$select", "subject,start,end"),
-                new QueryOption("$top", "20"),
-                new QueryOption("$skip", "0")
-              })
-            );
-    
-            request.get(new ICallback<IEventCollectionPage>() {
-              @Override
-              public void success(IEventCollectionPage page) {
-                List<Event> listOfEvents = page.getCurrentPage();
-                for (Event item : listOfEvents) {
-                  events.add(item.subject);
+              IEventCollectionRequest request = graphClient
+                                            .me()
+                                            .events()
+                                            .buildRequest(
+                Arrays.asList(new Option[]{
+                  new QueryOption("$select", "subject,start,end"),
+                  new QueryOption("$top", "20"),
+                  new QueryOption("$skip", "0")
+                })
+              );
+      
+              request.get(new ICallback<IEventCollectionPage>() {
+                @Override
+                public void success(IEventCollectionPage page) {
+                  List<Event> listOfEvents = page.getCurrentPage();
+                  for (Event item : listOfEvents) {
+                    events.add(item.subject);
+                  }
+                  result.set(events);
                 }
-                result.set(events);
-              }
 
-              @Override
-              public void failure(ClientException ex) {
-                ex.printStackTrace();
-              }
-            });
+                @Override
+                public void failure(ClientException ex) {
+                  ex.printStackTrace();
+                }
+              });
 
-            return result;
+              return result;
+            }
           }
-        }
         ```
 
 1. The last step is to update the user interface to trigger the call to the Microsoft Graph to get a list of events from your calendar.
