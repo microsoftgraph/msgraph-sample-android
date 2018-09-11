@@ -25,9 +25,10 @@ build/
 /.idea/tasks.xml
 /.idea/gradle.xml
 /.idea/assetWizardSettings.xml
-/.idea/dictionaries
-/.idea/libraries
-/.idea/caches
+/.idea/dictionaries/
+/.idea/libraries/
+/.idea/caches/
+
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
