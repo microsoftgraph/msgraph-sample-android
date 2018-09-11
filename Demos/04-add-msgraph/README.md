@@ -14,16 +14,14 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
         
-        1. When Sync throws an error said cannot find the microsoft-graph 
+        1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
 
             1. Add the following code to the project build.gradle file 'allprojects' section:
 
               ```gradle
                 maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
               ```
-        2.  When execution failed for task ':app:transformResourcesWithMergeJavaResForDebug'.
-
-            1. Add the following code to the project /app/build.gradle file android section
+            2. Add the following code to the project /app/build.gradle file android section
 
               ```gradle
                   packagingOptions{
@@ -103,16 +101,15 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 
         ```java
         import android.content.Context;
-        import android.util.Log;
         import com.google.common.util.concurrent.SettableFuture;
 
         import com.microsoft.graph.concurrency.ICallback;
         import com.microsoft.graph.core.ClientException;
-        import com.microsoft.graph.models.extensions.Event;
-        import com.microsoft.graph.requests.extensions.IEventCollectionPage;
+        import com.microsoft.graph.extensions.Event;
+        import com.microsoft.graph.models.extensions.IEventCollectionPage;
         import com.microsoft.graph.requests.extensions.IEventCollectionRequest;
-        import com.microsoft.graph.models.extensions.IGraphServiceClient;
-        import com.microsoft.graph.options.Option;
+        import com.microsoft.graph.requests.extensions.IGraphServiceClient;
+        import com.microsoft.graph.models.options.Option;
         import com.microsoft.graph.options.QueryOption;
 
         import java.util.ArrayList;
