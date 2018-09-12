@@ -24,15 +24,17 @@ This module has been recorded and is available in the Office Development YouTube
 |        Roles         |                        Author(s)                        |
 | -------------------- | ------------------------------------------------------- |
 | Lab Manuals / Slides | Andrew Connell (Microsoft MVP, Voitanos) @andrewconnell |
+| Graph Java SDK Code  | vikyding (Microsoft) @vikyding                          |
 | Sponsor / Support    | Yina Arenas (Microsoft) @yinaa                          |
 
 ## Version history
 
-| Version |        Date        |                    Comments                    |
-| ------- | ------------------ | ---------------------------------------------- |
-| 1.1     | June 28, 2018      | Added screencast.                              |
-| 1.1     | June 22, 2018      | Rewritten to use latest guidance.              |
-| 1.0     | ~November 24, 2017 | Add Microsoft Graph related product breakouts. |
+| Version |        Date        |                                  Comments                                  |
+| ------- | ------------------ | -------------------------------------------------------------------------- |
+| 1.3     | September 12, 2018 | Replaced Graph Andriod SDK with Graph Java SDK & applied quarterly refresh |
+| 1.2     | June 28, 2018      | Added screencast.                                                          |
+| 1.1     | June 22, 2018      | Rewritten to use latest guidance.                                          |
+| 1.0     | ~November 24, 2017 | Add Microsoft Graph related product breakouts.                             |
 
 ## Disclaimer
 

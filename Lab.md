@@ -370,7 +370,7 @@ With the application created, now extend it to support authentication with Azure
 1. Add an interface to declare a new callback type that you will use:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSALAuthenticationCallback**, set the **Kind** to **Interface** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements before the interface declaration:
 
         ```java
         import android.app.Activity;
@@ -394,7 +394,7 @@ With the application created, now extend it to support authentication with Azure
 1. Add an authentication helper class:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **AuthenticationController** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements before the class declaration:
 
         ```java
         import android.app.Activity;
@@ -552,21 +552,21 @@ With the application created, now extend it to support authentication with Azure
         ```
 
 1. Wire up the signin and signout buttons to the authentication process:
-    1. Replace the contents of the `onSignin()` method to the following code:
+    1. Replace the contents of the `onSignin()` & `onSignout()` methods to the following code:
 
-    ```java
-    private void onSignin() {
-      AuthenticationController authController = AuthenticationController.getInstance(this);
-      authController.doAcquireToken(this, this);
-    }
+        ```java
+        private void onSignin() {
+          AuthenticationController authController = AuthenticationController.getInstance(this);
+          authController.doAcquireToken(this, this);
+        }
 
-    private void onSignout() {
-      AuthenticationController authController = AuthenticationController.getInstance(this);
-      authController.signout();
+        private void onSignout() {
+          AuthenticationController authController = AuthenticationController.getInstance(this);
+          authController.signout();
 
-      setPanelVisibility(true, false, false);
-    }
-    ```
+          setPanelVisibility(true, false, false);
+        }
+        ```
 
 1. Add the following method to the `MainActivity` class for the UI to update when there's an update to the activity, as in this case when the Android application receives control back from the browser that handled the authentication process:
 
@@ -608,23 +608,15 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         implementation 'com.microsoft.graph:microsoft-graph:0.1.+'
         ```
 
+    1. Add the following code to the project **app > build.gradle (Module: app)** file at the end of the existing `android` section
+
+        ```gradle
+        packagingOptions {
+          pickFirst 'META-INF/jersey-module-version'
+        }
+        ```
+
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
-       1. When Sync throws an error said cannot find the microsoft-graph or reslove the package
-
-          1. Add the following code to the project build.gradle file 'allprojects' section:
-
-              ```gradle
-                maven { url "https://dl.bintray.com/microsoftgraph/Maven" }
-              ```
-        2. When execution failed for task ':app:transformResourcesWithMergeJavaResForDebug'.
-
-            1. Add the following code to the project /app/build.gradle file android section
-              
-              ```gradle
-                  packagingOptions{
-                      pickFirst 'META-INF/jersey-module-version'
-                  }
-              ```
 
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
@@ -652,42 +644,40 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following members to implement the `MSGraphServiceClientManager` class. This is used to create a new instance of the **MicrosoftServiceClient** object using the access token required from Azure AD:
 
         ```java
-        public class MSGraphServiceClientManager implements IAuthenticationProvider {
-          private final static String TAG = MSGraphServiceClientManager.class.getSimpleName();
-          private IGraphServiceClient graphClient;
-          private static MSGraphServiceClientManager INSTANCE;
-          private static Context context;
+        private final static String TAG = MSGraphServiceClientManager.class.getSimpleName();
+        private IGraphServiceClient graphClient;
+        private static MSGraphServiceClientManager INSTANCE;
+        private static Context context;
 
-          @Override
-          public void authenticateRequest(IHttpRequest request) {
-            try {
-              request.addHeader("Authorization", "Bearer "
-                      + AuthenticationController.getInstance(context)
-                      .getAccessToken());
-            } catch (NullPointerException e) {
-              e.printStackTrace();
-            }
+        @Override
+        public void authenticateRequest(IHttpRequest request) {
+          try {
+            request.addHeader("Authorization", "Bearer "
+                    + AuthenticationController.getInstance(context)
+                    .getAccessToken());
+          } catch (NullPointerException e) {
+            e.printStackTrace();
           }
+        }
 
-          public static synchronized MSGraphServiceClientManager getInstance(Context ctx) {
-            context = ctx;
-            if (INSTANCE == null) {
-              INSTANCE = new MSGraphServiceClientManager();
-            }
-            return INSTANCE;
+        public static synchronized MSGraphServiceClientManager getInstance(Context ctx) {
+          context = ctx;
+          if (INSTANCE == null) {
+            INSTANCE = new MSGraphServiceClientManager();
           }
+          return INSTANCE;
+        }
 
-          public synchronized IGraphServiceClient getGraphServiceClient() {
-            return getGraphServiceClient(this);
-          }
+        public synchronized IGraphServiceClient getGraphServiceClient() {
+          return getGraphServiceClient(this);
+        }
 
-          public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
-            if (graphClient == null){
-              IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-              graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
-            }
-            return graphClient;
+        public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
+          if (graphClient == null){
+            IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
+            graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
           }
+          return graphClient;
         }
         ```
 
@@ -718,48 +708,46 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following members to implement the `MSGraphServiceController` class:
 
         ```java
-          public class MSGraphServiceController {
-            private final static String TAG = MSGraphServiceController.class.getSimpleName();
-            private final IGraphServiceClient graphClient;
-            final List<String> events = new ArrayList<>();
+        private final static String TAG = MSGraphServiceController.class.getSimpleName();
+        private final IGraphServiceClient graphClient;
+        final List<String> events = new ArrayList<>();
 
-            public MSGraphServiceController(Context context) {
-              graphClient = MSGraphServiceClientManager.getInstance(context).getGraphServiceClient();
+        public MSGraphServiceController(Context context) {
+          graphClient = MSGraphServiceClientManager.getInstance(context).getGraphServiceClient();
+        }
+
+        public SettableFuture<List<String>> getEvents() {
+          final SettableFuture<List<String>> result = SettableFuture.create();
+
+          IEventCollectionRequest request = graphClient
+                                        .me()
+                                        .events()
+                                        .buildRequest(
+            Arrays.asList(new Option[]{
+              new QueryOption("$select", "subject,start,end"),
+              new QueryOption("$top", "20"),
+              new QueryOption("$skip", "0")
+            })
+          );
+
+          request.get(new ICallback<IEventCollectionPage>() {
+            @Override
+            public void success(IEventCollectionPage page) {
+              List<Event> listOfEvents = page.getCurrentPage();
+              for (Event item : listOfEvents) {
+                events.add(item.subject);
+              }
+              result.set(events);
             }
 
-            public SettableFuture<List<String>> getEvents() {
-              final SettableFuture<List<String>> result = SettableFuture.create();
-
-              IEventCollectionRequest request = graphClient
-                                            .me()
-                                            .events()
-                                            .buildRequest(
-                Arrays.asList(new Option[]{
-                  new QueryOption("$select", "subject,start,end"),
-                  new QueryOption("$top", "20"),
-                  new QueryOption("$skip", "0")
-                })
-              );
-      
-              request.get(new ICallback<IEventCollectionPage>() {
-                @Override
-                public void success(IEventCollectionPage page) {
-                  List<Event> listOfEvents = page.getCurrentPage();
-                  for (Event item : listOfEvents) {
-                    events.add(item.subject);
-                  }
-                  result.set(events);
-                }
-
-                @Override
-                public void failure(ClientException ex) {
-                  ex.printStackTrace();
-                }
-              });
-
-              return result;
+            @Override
+            public void failure(ClientException ex) {
+              ex.printStackTrace();
             }
-          }
+          });
+
+          return result;
+        }
         ```
 
 1. The last step is to update the user interface to trigger the call to the Microsoft Graph to get a list of events from your calendar.

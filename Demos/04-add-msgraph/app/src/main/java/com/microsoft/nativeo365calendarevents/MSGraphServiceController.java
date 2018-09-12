@@ -26,21 +26,19 @@ public class MSGraphServiceController {
     graphClient = MSGraphServiceClientManager.getInstance(context).getGraphServiceClient();
   }
 
-  public SettableFuture<List<String>>   getEvents() {
+  public SettableFuture<List<String>> getEvents() {
     final SettableFuture<List<String>> result = SettableFuture.create();
 
     IEventCollectionRequest request = graphClient
-                                          .me()
-                                          .events()
-                                          .buildRequest(
-      Arrays.asList(new Option[]{
-        new QueryOption("$select", "subject,start,end"),
-        new QueryOption("$top", "20"),
-        new QueryOption("$skip", "0")
-      })
-    );
-    
-    Log.d(TAG, "Request object: " + request.toString());
+            .me()
+            .events()
+            .buildRequest(
+                    Arrays.asList(new Option[]{
+                            new QueryOption("$select", "subject,start,end"),
+                            new QueryOption("$top", "20"),
+                            new QueryOption("$skip", "0")
+                    })
+            );
 
     request.get(new ICallback<IEventCollectionPage>() {
       @Override

@@ -10,6 +10,7 @@ import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.http.IHttpRequest;
 
+
 public class MSGraphServiceClientManager implements IAuthenticationProvider {
   private final static String TAG = MSGraphServiceClientManager.class.getSimpleName();
   private IGraphServiceClient graphClient;
@@ -22,8 +23,6 @@ public class MSGraphServiceClientManager implements IAuthenticationProvider {
       request.addHeader("Authorization", "Bearer "
               + AuthenticationController.getInstance(context)
               .getAccessToken());
-
-      Log.i(TAG, "Request: " + request.toString());
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
