@@ -9,7 +9,6 @@ import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.MsalException;
 import com.microsoft.identity.client.PublicClientApplication;
 
-
 public class AuthenticationController {
   private final String TAG = AuthenticationController.class.getSimpleName();
   private static AuthenticationController INSTANCE;
@@ -82,5 +81,4 @@ public class AuthenticationController {
       }
     };
   }
-
 }

@@ -20,7 +20,6 @@ import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.MsalException;
 import com.microsoft.identity.client.User;
 
-
 public class MainActivity extends AppCompatActivity implements MSALAuthenticationCallback {
   private final static String TAG = MainActivity.class.getSimpleName();
 
@@ -34,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
     listEvents = findViewById(R.id.list_events);
     panelSignIn = findViewById(R.id.panel_signIn);
     panelEvents = findViewById(R.id.panel_events);
@@ -46,17 +46,17 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
       }
     });
 
-    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onLoadEvents();
-      }
-    });
-
     (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         onSignout();
+      }
+    });
+
+    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onLoadEvents();
       }
     });
 

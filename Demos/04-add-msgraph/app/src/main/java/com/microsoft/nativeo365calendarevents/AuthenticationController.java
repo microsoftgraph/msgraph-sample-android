@@ -60,10 +60,6 @@ public class AuthenticationController {
     return new AuthenticationCallback() {
       @Override
       public void onSuccess(AuthenticationResult authenticationResult) {
-        Log.d(TAG, "Successfully authenticated");
-        Log.d(TAG, "ID Token: " + authenticationResult.getIdToken());
-        Log.d(TAG, "Access Token: " + authenticationResult.getAccessToken());
-
         mAuthResult = authenticationResult;
         if (mActivityCallback != null) {
           mActivityCallback.onMsalAuthSuccess(mAuthResult);
@@ -85,5 +81,4 @@ public class AuthenticationController {
       }
     };
   }
-
 }

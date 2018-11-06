@@ -33,11 +33,10 @@ public class MSGraphServiceController {
             .me()
             .events()
             .buildRequest(
-                    Arrays.asList(new Option[]{
+                    Arrays.asList(
                             new QueryOption("$select", "subject,start,end"),
                             new QueryOption("$top", "20"),
-                            new QueryOption("$skip", "0")
-                    })
+                            new QueryOption("$skip", "0"))
             );
 
     request.get(new ICallback<IEventCollectionPage>() {

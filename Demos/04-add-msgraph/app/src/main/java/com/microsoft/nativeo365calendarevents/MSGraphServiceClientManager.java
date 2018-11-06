@@ -10,7 +10,6 @@ import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.http.IHttpRequest;
 
-
 public class MSGraphServiceClientManager implements IAuthenticationProvider {
   private final static String TAG = MSGraphServiceClientManager.class.getSimpleName();
   private IGraphServiceClient graphClient;
@@ -42,8 +41,7 @@ public class MSGraphServiceClientManager implements IAuthenticationProvider {
 
   public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
     if (graphClient == null){
-      IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-      graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
+      graphClient = GraphServiceClient.builder().authenticationProvider(authenticationProvider).buildClient();
     }
     return graphClient;
   }
