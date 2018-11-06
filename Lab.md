@@ -15,7 +15,7 @@ To complete this lab, you need the following:
 
 * Office 365 tenancy
   * If you do not have one, you obtain one (for free) by signing up to the [Office 365 Developer Program](https://developer.microsoft.com/en-us/office/dev-program).
-* [Android Studio](https://developer.android.com/studio/) v3.1.2
+* [Android Studio](https://developer.android.com/studio/) v3.2.1
 * [Android SDK](https://developer.android.com/studio/releases/sdk-tools) v26+
 
 <a name="exercise1"></a>
@@ -81,7 +81,7 @@ In this exercise you will create an Android application and wire up the differen
 
 1. In the **Add an Activity to Mobile** dialog, select **Basic Activity** and select **Next**:
 
-    ![Screenshot selecting Basic Actvity in the Add Activity to Mobile dialog](./Images/as-createproject-03.png)
+    ![Screenshot selecting Basic Activity in the Add Activity to Mobile dialog](./Images/as-createproject-03.png)
 
 1. In the **Configure Activity** dialog, leave the default values and select **Finish**:
 
@@ -195,7 +195,7 @@ The first step is to create the shell of the user experience; creating a workabl
     </LinearLayout>
     ```
 
-1. In the **Android** tool window, locate and open the file **app > java > com.microsoft.nativeo365calendarevents >MainActivity**.
+1. In the **Android** tool window, locate and open the file **app > java > com.microsoft.nativeo365calendarevents > MainActivity**.
     1. Add the following `import` statements to the existing `import` statements:
 
         ```java
