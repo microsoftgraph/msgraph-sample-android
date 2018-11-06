@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.microsoft.identity.client:msal-0.1.3">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/msal-0.1.3.aar/83b4246dd03ad347efe206f0aee4e234/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/msal-0.1.3.aar/83b4246dd03ad347efe206f0aee4e234/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/msal-0.1.3.aar/106814f277369f798b24cf7037430b56/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/msal-0.1.3.aar/106814f277369f798b24cf7037430b56/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

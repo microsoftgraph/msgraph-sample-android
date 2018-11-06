@@ -600,7 +600,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following code to the `dependencies` section, immediately after the previously added dependencies:
 
         ```gradle
-        implementation 'com.microsoft.graph:microsoft-graph:0.1.+'
+        implementation 'com.microsoft.graph:microsoft-graph:1.0.+'
         ```
 
     1. Add the following code to the project **app > build.gradle (Module: app)** file at the end of the existing `android` section
@@ -616,12 +616,6 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceClientManager** and select **OK**.
-    1. Update the `MSGraphServiceClientManager` class to implement the `IAuthenticationProvider` interface:
-
-        ```java
-        public class MSGraphServiceClientManager implements IAuthenticationProvider
-        ```
-
     1. Add the following `import` statements to the existing `import` statements:
 
         ```java
@@ -634,6 +628,12 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         import com.microsoft.graph.requests.extensions.GraphServiceClient;
         import com.microsoft.graph.models.extensions.IGraphServiceClient;
         import com.microsoft.graph.http.IHttpRequest;
+        ```
+
+    1. Update the `MSGraphServiceClientManager` class to implement the `IAuthenticationProvider` interface:
+
+        ```java
+        public class MSGraphServiceClientManager implements IAuthenticationProvider
         ```
 
     1. Add the following members to implement the `MSGraphServiceClientManager` class. This is used to create a new instance of the **MicrosoftServiceClient** object using the access token required from Azure AD:
@@ -669,8 +669,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 
         public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
           if (graphClient == null){
-            IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-            graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
+            graphClient = GraphServiceClient.builder().authenticationProvider(authenticationProvider).buildClient();
           }
           return graphClient;
         }
@@ -715,15 +714,14 @@ The last step is to incorporate the Microsoft Graph into the application. For th
           final SettableFuture<List<String>> result = SettableFuture.create();
 
           IEventCollectionRequest request = graphClient
-                                        .me()
-                                        .events()
-                                        .buildRequest(
-            Arrays.asList(new Option[]{
-              new QueryOption("$select", "subject,start,end"),
-              new QueryOption("$top", "20"),
-              new QueryOption("$skip", "0")
-            })
-          );
+                  .me()
+                  .events()
+                  .buildRequest(
+                          Arrays.asList(
+                                  new QueryOption("$select", "subject,start,end"),
+                                  new QueryOption("$top", "20"),
+                                  new QueryOption("$skip", "0"))
+                  );
 
           request.get(new ICallback<IEventCollectionPage>() {
             @Override

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
     listEvents = findViewById(R.id.list_events);
     panelSignIn = findViewById(R.id.panel_signIn);
     panelEvents = findViewById(R.id.panel_events);
@@ -51,17 +52,17 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
       }
     });
 
-    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onLoadEvents();
-      }
-    });
-
     (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         onSignout();
+      }
+    });
+
+    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onLoadEvents();
       }
     });
 
