@@ -1,8 +1,8 @@
-# Microsoft Graph Training Module - Build Android native apps with the Microsoft Graph Android SDK
+# Microsoft Graph Training Module - Build Android native apps with the Microsoft Graph Java SDK
 
 This module will introduce you to working with the Microsoft Graph SDK to access data in Office 365 by building native mobile Android applications.
 
-## Lab - Build Android native apps with the Microsoft Graph Android SDK
+## Lab - Build Android native apps with the Microsoft Graph Java SDK
 
 In this lab you will create an Android application using the Azure AD v2 authentication endpoint and the Microsoft Authentication Library (MSAL) to access data in Office 365 using the Microsoft Graph.
 
@@ -17,22 +17,24 @@ In this lab you will create an Android application using the Azure AD v2 authent
 
 ## Watch the Module
 
-This module has been recorded and is available in the Office Development YouTube channel: [Build Android native apps with the Microsoft Graph Android SDK](https://youtu.be/Yk0FMwXanck)
+This module has been recorded and is available in the Office Development YouTube channel: [Build Android native apps with the Microsoft Graph Java SDK](https://youtu.be/Yk0FMwXanck)
 
 ## Contributors
 
 |        Roles         |                        Author(s)                        |
 | -------------------- | ------------------------------------------------------- |
 | Lab Manuals / Slides | Andrew Connell (Microsoft MVP, Voitanos) @andrewconnell |
+| Graph Java SDK Code  | vikyding (Microsoft) @vikyding                          |
 | Sponsor / Support    | Yina Arenas (Microsoft) @yinaa                          |
 
 ## Version history
 
-| Version |        Date        |                    Comments                    |
-| ------- | ------------------ | ---------------------------------------------- |
-| 1.1     | June 28, 2018      | Added screencast.                              |
-| 1.1     | June 22, 2018      | Rewritten to use latest guidance.              |
-| 1.0     | ~November 24, 2017 | Add Microsoft Graph related product breakouts. |
+| Version |        Date        |                                  Comments                                  |
+| ------- | ------------------ | -------------------------------------------------------------------------- |
+| 1.3     | September 12, 2018 | Replaced Graph Andriod SDK with Graph Java SDK & applied quarterly refresh |
+| 1.2     | June 28, 2018      | Added screencast.                                                          |
+| 1.1     | June 22, 2018      | Rewritten to use latest guidance.                                          |
+| 1.0     | ~November 24, 2017 | Add Microsoft Graph related product breakouts.                             |
 
 ## Disclaimer
 

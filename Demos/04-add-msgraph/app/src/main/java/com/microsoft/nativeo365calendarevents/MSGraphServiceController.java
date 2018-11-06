@@ -6,10 +6,10 @@ import com.google.common.util.concurrent.SettableFuture;
 
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.extensions.Event;
-import com.microsoft.graph.extensions.IEventCollectionPage;
-import com.microsoft.graph.extensions.IEventCollectionRequest;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.models.extensions.Event;
+import com.microsoft.graph.requests.extensions.IEventCollectionPage;
+import com.microsoft.graph.requests.extensions.IEventCollectionRequest;
+import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.options.Option;
 import com.microsoft.graph.options.QueryOption;
 
@@ -29,15 +29,16 @@ public class MSGraphServiceController {
   public SettableFuture<List<String>> getEvents() {
     final SettableFuture<List<String>> result = SettableFuture.create();
 
-    IEventCollectionRequest request = graphClient.getMe().getEvents().buildRequest(
-      Arrays.asList(new Option[]{
-        new QueryOption("$select", "subject,start,end"),
-        new QueryOption("$top", "20"),
-        new QueryOption("$skip", "0")
-      })
-    );
-    
-    Log.d(TAG, "Request object: " + request.toString());
+    IEventCollectionRequest request = graphClient
+            .me()
+            .events()
+            .buildRequest(
+                    Arrays.asList(new Option[]{
+                            new QueryOption("$select", "subject,start,end"),
+                            new QueryOption("$top", "20"),
+                            new QueryOption("$skip", "0")
+                    })
+            );
 
     request.get(new ICallback<IEventCollectionPage>() {
       @Override

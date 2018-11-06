@@ -1,6 +1,6 @@
 ## Extend the Android App for Azure AD Authentication
 
-With the application created, now extend it to support authentication with Azure AD. This is required to obtain the necessary OAuth access token to call the Microsoft Graph. In this step you will integrate the Microsoft Authentication Library (MSAL) into the application.
+With the application created, now extend it to support authentication with Azure AD V2.0. This is required to obtain the necessary OAuth access token to call the Microsoft Graph. In this step you will integrate the Microsoft Authentication Library (MSAL) into the application.
 
 > This demo builds off the final product from the previous demo.
 
