@@ -373,13 +373,8 @@ With the application created, now extend it to support authentication with Azure
     1. Add the following `import` statements before the interface declaration:
 
         ```java
-        import android.app.Activity;
-        import android.content.Context;
-        import android.util.Log;
-        import com.microsoft.identity.client.AuthenticationCallback;
         import com.microsoft.identity.client.AuthenticationResult;
         import com.microsoft.identity.client.MsalException;
-        import com.microsoft.identity.client.PublicClientApplication;
         ```
 
     1. Add the following code to the `MSALAuthenticationCallback` interface:
