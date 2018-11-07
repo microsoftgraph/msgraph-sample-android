@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
     listEvents = findViewById(R.id.list_events);
     panelSignIn = findViewById(R.id.panel_signIn);
     panelEvents = findViewById(R.id.panel_events);
@@ -38,17 +39,17 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onLoadEvents();
-      }
-    });
-
     (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         onSignout();
+      }
+    });
+
+    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onLoadEvents();
       }
     });
 
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
   private void onSignin() {
     Toast.makeText(MainActivity.this, "Hello <user>!", Toast.LENGTH_LONG).show();
 
-    setPanelVisibility(false, true, false);
+    setPanelVisibility(false,true,false);
   }
 
   private void onSignout() {
@@ -77,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     panelLoadEvent.setVisibility(showLoadEvents ? View.VISIBLE : View.GONE);
     panelEvents.setVisibility(showList ? View.VISIBLE : View.GONE);
   }
-
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,5 +100,4 @@ public class MainActivity extends AppCompatActivity {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

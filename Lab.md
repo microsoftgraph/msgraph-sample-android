@@ -15,7 +15,7 @@ To complete this lab, you need the following:
 
 * Office 365 tenancy
   * If you do not have one, you obtain one (for free) by signing up to the [Office 365 Developer Program](https://developer.microsoft.com/en-us/office/dev-program).
-* [Android Studio](https://developer.android.com/studio/) v3.1.2
+* [Android Studio](https://developer.android.com/studio/) v3.2.1
 * [Android SDK](https://developer.android.com/studio/releases/sdk-tools) v26+
 
 <a name="exercise1"></a>
@@ -81,7 +81,7 @@ In this exercise you will create an Android application and wire up the differen
 
 1. In the **Add an Activity to Mobile** dialog, select **Basic Activity** and select **Next**:
 
-    ![Screenshot selecting Basic Actvity in the Add Activity to Mobile dialog](./Images/as-createproject-03.png)
+    ![Screenshot selecting Basic Activity in the Add Activity to Mobile dialog](./Images/as-createproject-03.png)
 
 1. In the **Configure Activity** dialog, leave the default values and select **Finish**:
 
@@ -195,7 +195,7 @@ The first step is to create the shell of the user experience; creating a workabl
     </LinearLayout>
     ```
 
-1. In the **Android** tool window, locate and open the file **app > java > com.microsoft.nativeo365calendarevents >MainActivity**.
+1. In the **Android** tool window, locate and open the file **app > java > com.microsoft.nativeo365calendarevents > MainActivity**.
     1. Add the following `import` statements to the existing `import` statements:
 
         ```java
@@ -315,7 +315,7 @@ With the application created, now extend it to support authentication with Azure
     1. Add the following code to the top of the `dependencies` section, immediately before the dependencies added in the previous section:
 
         ```gradle
-        implementation('com.microsoft.identity.client:msal:0.1.3') {
+        implementation('com.microsoft.identity.client:msal:0.2.1') {
             exclude group: 'com.android.support', module: 'appcompat-v7'
             exclude group: 'com.google.code.gson'
         }
@@ -373,13 +373,8 @@ With the application created, now extend it to support authentication with Azure
     1. Add the following `import` statements before the interface declaration:
 
         ```java
-        import android.app.Activity;
-        import android.content.Context;
-        import android.util.Log;
-        import com.microsoft.identity.client.AuthenticationCallback;
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
-        import com.microsoft.identity.client.PublicClientApplication;
+        import com.microsoft.identity.client.exception.MsalException;
         ```
 
     1. Add the following code to the `MSALAuthenticationCallback` interface:
@@ -403,7 +398,7 @@ With the application created, now extend it to support authentication with Azure
 
         import com.microsoft.identity.client.AuthenticationCallback;
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
+        import com.microsoft.identity.client.exception.MsalException;
         import com.microsoft.identity.client.PublicClientApplication;
         ```
 
@@ -493,7 +488,7 @@ With the application created, now extend it to support authentication with Azure
 
         ```java
         public void signout() {
-          mApplication.remove(mAuthResult.getUser());
+          mApplication.removeAccount(mAuthResult.getAccount());
           // Reset the AuthenticationManager object
           AuthenticationController.resetInstance();
         }
@@ -514,8 +509,8 @@ With the application created, now extend it to support authentication with Azure
         import android.util.Log;
 
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
-        import com.microsoft.identity.client.User;
+        import com.microsoft.identity.client.exception.MsalException;
+        import com.microsoft.identity.client.IAccount;
         ```
 
     1. Add the following methods to implement the `MSALAuthenticationCallback` interface.
@@ -525,11 +520,11 @@ With the application created, now extend it to support authentication with Azure
         // these methods are called by the AuthenticationController
         @Override
         public void onMsalAuthSuccess(AuthenticationResult authenticationResult) {
-          User user = authenticationResult.getUser();
+          IAccount user = authenticationResult.getAccount();
 
-          Toast.makeText(MainActivity.this, "Hello " + user.getName() 
-            + " (" + user.getDisplayableId() + ")!", Toast.LENGTH_LONG
-            ).show();
+          Toast.makeText(MainActivity.this, "Hello " + user.getUsername()
+                  + " (" + user.getAccountIdentifier() + ")!", Toast.LENGTH_LONG
+          ).show();
 
           setPanelVisibility(false, true, false);
         }
@@ -605,7 +600,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
     1. Add the following code to the `dependencies` section, immediately after the previously added dependencies:
 
         ```gradle
-        implementation 'com.microsoft.graph:microsoft-graph:0.1.+'
+        implementation 'com.microsoft.graph:microsoft-graph:1.0.+'
         ```
 
     1. Add the following code to the project **app > build.gradle (Module: app)** file at the end of the existing `android` section
@@ -621,12 +616,6 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceClientManager** and select **OK**.
-    1. Update the `MSGraphServiceClientManager` class to implement the `IAuthenticationProvider` interface:
-
-        ```java
-        public class MSGraphServiceClientManager implements IAuthenticationProvider
-        ```
-
     1. Add the following `import` statements to the existing `import` statements:
 
         ```java
@@ -639,6 +628,12 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         import com.microsoft.graph.requests.extensions.GraphServiceClient;
         import com.microsoft.graph.models.extensions.IGraphServiceClient;
         import com.microsoft.graph.http.IHttpRequest;
+        ```
+
+    1. Update the `MSGraphServiceClientManager` class to implement the `IAuthenticationProvider` interface:
+
+        ```java
+        public class MSGraphServiceClientManager implements IAuthenticationProvider
         ```
 
     1. Add the following members to implement the `MSGraphServiceClientManager` class. This is used to create a new instance of the **MicrosoftServiceClient** object using the access token required from Azure AD:
@@ -674,8 +669,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 
         public synchronized IGraphServiceClient getGraphServiceClient(IAuthenticationProvider authenticationProvider) {
           if (graphClient == null){
-            IClientConfig clientConfig = DefaultClientConfig.createWithAuthenticationProvider(authenticationProvider);
-            graphClient = GraphServiceClient.builder().fromConfig(clientConfig).buildClient();
+            graphClient = GraphServiceClient.builder().authenticationProvider(authenticationProvider).buildClient();
           }
           return graphClient;
         }
@@ -720,15 +714,14 @@ The last step is to incorporate the Microsoft Graph into the application. For th
           final SettableFuture<List<String>> result = SettableFuture.create();
 
           IEventCollectionRequest request = graphClient
-                                        .me()
-                                        .events()
-                                        .buildRequest(
-            Arrays.asList(new Option[]{
-              new QueryOption("$select", "subject,start,end"),
-              new QueryOption("$top", "20"),
-              new QueryOption("$skip", "0")
-            })
-          );
+                  .me()
+                  .events()
+                  .buildRequest(
+                          Arrays.asList(
+                                  new QueryOption("$select", "subject,start,end"),
+                                  new QueryOption("$top", "20"),
+                                  new QueryOption("$skip", "0"))
+                  );
 
           request.get(new ICallback<IEventCollectionPage>() {
             @Override

@@ -31,6 +31,7 @@ This module has been recorded and is available in the Office Development YouTube
 
 | Version |        Date        |                                  Comments                                  |
 | ------- | ------------------ | -------------------------------------------------------------------------- |
+| 1.4     | November 8, 2018   | Updated Graph Java SDK to GA v1 & applied quarterly refresh                |
 | 1.3     | September 12, 2018 | Replaced Graph Andriod SDK with Graph Java SDK & applied quarterly refresh |
 | 1.2     | June 28, 2018      | Added screencast.                                                          |
 | 1.1     | June 22, 2018      | Rewritten to use latest guidance.                                          |
