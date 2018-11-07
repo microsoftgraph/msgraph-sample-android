@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.AuthenticationResult;
-import com.microsoft.identity.client.MsalException;
+import com.microsoft.identity.client.exception.MsalException;
 import com.microsoft.identity.client.PublicClientApplication;
 
 public class AuthenticationController {
@@ -51,7 +51,7 @@ public class AuthenticationController {
   }
 
   public void signout() {
-    mApplication.remove(mAuthResult.getUser());
+    mApplication.removeAccount(mAuthResult.getAccount());
     // Reset the AuthenticationManager object
     AuthenticationController.resetInstance();
   }

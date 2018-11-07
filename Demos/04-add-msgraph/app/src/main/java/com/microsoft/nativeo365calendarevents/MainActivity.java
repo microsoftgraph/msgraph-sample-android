@@ -17,8 +17,8 @@ import android.widget.Toast;
 import android.app.ProgressDialog;
 
 import com.microsoft.identity.client.AuthenticationResult;
-import com.microsoft.identity.client.MsalException;
-import com.microsoft.identity.client.User;
+import com.microsoft.identity.client.exception.MsalException;
+import com.microsoft.identity.client.IAccount;
 
 import android.widget.ArrayAdapter;
 import com.google.common.util.concurrent.FutureCallback;
@@ -156,10 +156,10 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
   // these methods are called by the AuthenticationController
   @Override
   public void onMsalAuthSuccess(AuthenticationResult authenticationResult) {
-    User user = authenticationResult.getUser();
+    IAccount user = authenticationResult.getAccount();
 
-    Toast.makeText(MainActivity.this, "Hello " + user.getName()
-            + " (" + user.getDisplayableId() + ")!", Toast.LENGTH_LONG
+    Toast.makeText(MainActivity.this, "Hello " + user.getUsername()
+            + " (" + user.getAccountIdentifier() + ")!", Toast.LENGTH_LONG
     ).show();
 
     setPanelVisibility(false, true, false);

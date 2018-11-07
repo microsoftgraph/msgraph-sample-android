@@ -315,7 +315,7 @@ With the application created, now extend it to support authentication with Azure
     1. Add the following code to the top of the `dependencies` section, immediately before the dependencies added in the previous section:
 
         ```gradle
-        implementation('com.microsoft.identity.client:msal:0.1.3') {
+        implementation('com.microsoft.identity.client:msal:0.2.1') {
             exclude group: 'com.android.support', module: 'appcompat-v7'
             exclude group: 'com.google.code.gson'
         }
@@ -374,7 +374,7 @@ With the application created, now extend it to support authentication with Azure
 
         ```java
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
+        import com.microsoft.identity.client.exception.MsalException;
         ```
 
     1. Add the following code to the `MSALAuthenticationCallback` interface:
@@ -398,7 +398,7 @@ With the application created, now extend it to support authentication with Azure
 
         import com.microsoft.identity.client.AuthenticationCallback;
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
+        import com.microsoft.identity.client.exception.MsalException;
         import com.microsoft.identity.client.PublicClientApplication;
         ```
 
@@ -488,7 +488,7 @@ With the application created, now extend it to support authentication with Azure
 
         ```java
         public void signout() {
-          mApplication.remove(mAuthResult.getUser());
+          mApplication.removeAccount(mAuthResult.getAccount());
           // Reset the AuthenticationManager object
           AuthenticationController.resetInstance();
         }
@@ -509,8 +509,8 @@ With the application created, now extend it to support authentication with Azure
         import android.util.Log;
 
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
-        import com.microsoft.identity.client.User;
+        import com.microsoft.identity.client.exception.MsalException;
+        import com.microsoft.identity.client.IAccount;
         ```
 
     1. Add the following methods to implement the `MSALAuthenticationCallback` interface.
@@ -520,11 +520,11 @@ With the application created, now extend it to support authentication with Azure
         // these methods are called by the AuthenticationController
         @Override
         public void onMsalAuthSuccess(AuthenticationResult authenticationResult) {
-          User user = authenticationResult.getUser();
+          IAccount user = authenticationResult.getAccount();
 
-          Toast.makeText(MainActivity.this, "Hello " + user.getName() 
-            + " (" + user.getDisplayableId() + ")!", Toast.LENGTH_LONG
-            ).show();
+          Toast.makeText(MainActivity.this, "Hello " + user.getUsername()
+                  + " (" + user.getAccountIdentifier() + ")!", Toast.LENGTH_LONG
+          ).show();
 
           setPanelVisibility(false, true, false);
         }
