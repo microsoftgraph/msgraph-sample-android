@@ -8,12 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.app.ProgressDialog;
 
 public class MainActivity extends AppCompatActivity {
+
   private final static String TAG = MainActivity.class.getSimpleName();
 
   private ProgressDialog progress;
@@ -21,6 +23,29 @@ public class MainActivity extends AppCompatActivity {
   private LinearLayout panelSignIn;
   private LinearLayout panelEvents;
   private LinearLayout panelLoadEvent;
+
+  private void onSignin() {
+    Toast.makeText(MainActivity.this, "Hello <user>!", Toast.LENGTH_LONG).show();
+
+    setPanelVisibility(false,true,false);
+  }
+
+  private void onSignout() {
+    setPanelVisibility(true, false, false);
+  }
+
+  private void onLoadEvents() {
+    Toast.makeText(MainActivity.this,
+            "Successfully loaded events from Office 365 calendar",
+            Toast.LENGTH_LONG
+    ).show();
+  }
+
+  private void setPanelVisibility(Boolean showSignIn, Boolean showLoadEvents, Boolean showList) {
+    panelSignIn.setVisibility(showSignIn ? View.VISIBLE : View.GONE);
+    panelLoadEvent.setVisibility(showLoadEvents ? View.VISIBLE : View.GONE);
+    panelEvents.setVisibility(showList ? View.VISIBLE : View.GONE);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,29 +79,6 @@ public class MainActivity extends AppCompatActivity {
     });
 
     setPanelVisibility(true, false, false);
-  }
-
-  private void onSignin() {
-    Toast.makeText(MainActivity.this, "Hello <user>!", Toast.LENGTH_LONG).show();
-
-    setPanelVisibility(false,true,false);
-  }
-
-  private void onSignout() {
-    setPanelVisibility(true, false, false);
-  }
-
-  private void onLoadEvents() {
-    Toast.makeText(MainActivity.this,
-            "Successfully loaded events from Office 365 calendar",
-            Toast.LENGTH_LONG
-    ).show();
-  }
-
-  private void setPanelVisibility(Boolean showSignIn, Boolean showLoadEvents, Boolean showList) {
-    panelSignIn.setVisibility(showSignIn ? View.VISIBLE : View.GONE);
-    panelLoadEvent.setVisibility(showLoadEvents ? View.VISIBLE : View.GONE);
-    panelEvents.setVisibility(showList ? View.VISIBLE : View.GONE);
   }
 
   @Override
