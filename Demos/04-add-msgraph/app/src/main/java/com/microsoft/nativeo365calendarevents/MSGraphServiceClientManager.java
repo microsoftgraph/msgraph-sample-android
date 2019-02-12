@@ -11,6 +11,7 @@ import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.http.IHttpRequest;
 
 public class MSGraphServiceClientManager implements IAuthenticationProvider {
+
   private final static String TAG = MSGraphServiceClientManager.class.getSimpleName();
   private IGraphServiceClient graphClient;
   private static MSGraphServiceClientManager INSTANCE;
@@ -45,4 +46,5 @@ public class MSGraphServiceClientManager implements IAuthenticationProvider {
     }
     return graphClient;
   }
+
 }

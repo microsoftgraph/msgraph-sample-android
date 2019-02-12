@@ -1,9 +1,6 @@
 package com.microsoft.nativeo365calendarevents;
 
-import android.content.Intent;
-import android.util.Log;
 import android.os.Bundle;
-
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,10 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.app.ProgressDialog;
+
+import android.content.Intent;
+import android.util.Log;
 
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.exception.MsalException;
@@ -27,6 +28,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MSALAuthenticationCallback {
+
   private final static String TAG = MainActivity.class.getSimpleName();
 
   private ProgressDialog progress;
@@ -34,40 +36,6 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
   private LinearLayout panelSignIn;
   private LinearLayout panelEvents;
   private LinearLayout panelLoadEvent;
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-
-    listEvents = findViewById(R.id.list_events);
-    panelSignIn = findViewById(R.id.panel_signIn);
-    panelEvents = findViewById(R.id.panel_events);
-    panelLoadEvent = findViewById(R.id.panel_loadEvent);
-
-    (findViewById(R.id.btn_signIn)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onSignin();
-      }
-    });
-
-    (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onSignout();
-      }
-    });
-
-    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onLoadEvents();
-      }
-    });
-
-    setPanelVisibility(true, false, false);
-  }
 
   private void onSignin() {
     AuthenticationController authController = AuthenticationController.getInstance(this);
@@ -106,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
     });
   }
 
+  private void setPanelVisibility(Boolean showSignIn, Boolean showLoadEvents, Boolean showList) {
+    panelSignIn.setVisibility(showSignIn ? View.VISIBLE : View.GONE);
+    panelLoadEvent.setVisibility(showLoadEvents ? View.VISIBLE : View.GONE);
+    panelEvents.setVisibility(showList ? View.VISIBLE : View.GONE);
+  }
+
   private void bindEvents(List<String> events) {
     setPanelVisibility(false, false, true);
 
@@ -116,18 +90,46 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
     listEvents.setAdapter(adapter);
   }
 
-  private void setPanelVisibility(Boolean showSignIn, Boolean showLoadEvents, Boolean showList) {
-    panelSignIn.setVisibility(showSignIn ? View.VISIBLE : View.GONE);
-    panelLoadEvent.setVisibility(showLoadEvents ? View.VISIBLE : View.GONE);
-    panelEvents.setVisibility(showList ? View.VISIBLE : View.GONE);
-  }
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (AuthenticationController.getInstance(this).getPublicClient() != null) {
       AuthenticationController.getInstance(this).getPublicClient().handleInteractiveRequestRedirect(requestCode, resultCode, data);
     }
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    listEvents = findViewById(R.id.list_events);
+    panelSignIn = findViewById(R.id.panel_signIn);
+    panelEvents = findViewById(R.id.panel_events);
+    panelLoadEvent = findViewById(R.id.panel_loadEvent);
+
+    (findViewById(R.id.btn_signIn)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onSignin();
+      }
+    });
+
+    (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onSignout();
+      }
+    });
+
+    (findViewById(R.id.btn_loadEvent)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onLoadEvents();
+      }
+    });
+
+    setPanelVisibility(true, false, false);
   }
 
   @Override
@@ -153,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements MSALAuthenticatio
   }
 
   //region MSALAuthenticationCallback() implementation
-  // these methods are called by the AuthenticationController
-  @Override
+// these methods are called by the AuthenticationController
+    @Override
   public void onMsalAuthSuccess(AuthenticationResult authenticationResult) {
     IAccount user = authenticationResult.getAccount();
 

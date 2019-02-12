@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MSGraphServiceController {
+
   private final static String TAG = MSGraphServiceController.class.getSimpleName();
   private final IGraphServiceClient graphClient;
   final List<String> events = new ArrayList<>();
@@ -57,4 +58,5 @@ public class MSGraphServiceController {
 
     return result;
   }
+
 }
