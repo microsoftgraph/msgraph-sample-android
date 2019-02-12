@@ -15,7 +15,9 @@ To complete this lab, you need the following:
 
 * Office 365 tenancy
   * If you do not have one, you obtain one (for free) by signing up to the [Office 365 Developer Program](https://developer.microsoft.com/en-us/office/dev-program).
-* [Android Studio](https://developer.android.com/studio/) v3.2.1
+* [Android Studio](https://developer.android.com/studio/) v3.3.1
+* [Gradle](https://gradle.org/) v4.10.1
+  * *Installed with Andriod Studio*
 * [Android SDK](https://developer.android.com/studio/releases/sdk-tools) v26+
 
 <a name="exercise1"></a>
@@ -67,25 +69,17 @@ In this exercise you will create an Android application and wire up the differen
 
 1. Open **Android Studio**
 1. Select **Start a new Android Studio project**.
-1. In the new project dialog, set the following values:
-    * **Application name:** NativeO365CalendarEvents
-    * **Company domain:** microsoft.com
+1. In the **Choose your project** dialog, under the **Phone and Tablet** tab, select **Basic Activity** and select **Next**:
+
+    ![Screenshot selecting Basic Activity in the Choose your project dialog](./Images/as-createproject-03.png)
+
+1. In the **Configure your project** dialog, set the following values:
+    * **Name:** NativeO365CalendarEvents
+    * **Package name:** com.microsoft.nativeo365calendarevents
+    * **Language:** Java
+    * **Minimum API Level:** API 23: Android 6.0 (Marshmallow)
 
     ![Screenshot of the new project dialog in Android Studio](./Images/as-createproject-01.png)
-
-1. In the **Target Android Devices** dialog, set the following values and select **Next**:
-    * **Phone and Tablet**: selected and pick the desired Android version you want to target... select an API version 23 or higher
-    * leave all other options selected
-
-    ![Screenshot of specifying the target Android devices](./Images/as-createproject-02.png)
-
-1. In the **Add an Activity to Mobile** dialog, select **Basic Activity** and select **Next**:
-
-    ![Screenshot selecting Basic Activity in the Add Activity to Mobile dialog](./Images/as-createproject-03.png)
-
-1. In the **Configure Activity** dialog, leave the default values and select **Finish**:
-
-    ![Screenshot specifying the details of the new activity](./Images/as-createproject-04.png)
 
 1. Add the necessary dependencies to the project:
     1. In the **Android** tool window, locate and open the file **Gradle Scripts > build.gradle (Module: app)**:
@@ -95,7 +89,7 @@ In this exercise you will create an Android application and wire up the differen
     1. Add the following implementations to the top of the existing `dependencies` section:
 
         ```gradle
-        implementation 'com.google.code.gson:gson:2.3.1'
+        implementation 'com.google.code.gson:gson:2.8.2'
         implementation 'com.google.guava:guava:25.1-android'
         ```
 
@@ -319,7 +313,7 @@ With the application created, now extend it to support authentication with Azure
             exclude group: 'com.android.support', module: 'appcompat-v7'
             exclude group: 'com.google.code.gson'
         }
-        implementation 'com.android.volley:volley:1.0.0'
+        implementation 'com.android.volley:volley:1.1.0'
         ```
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
@@ -616,7 +610,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceClientManager** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements after the existing `package` statement:
 
         ```java
         import android.content.Context;
@@ -678,7 +672,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a class to the project that acts as the Microsoft Graph controller for the application:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceController** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements to the existing `package` statement:
 
         ```java
         import android.content.Context;

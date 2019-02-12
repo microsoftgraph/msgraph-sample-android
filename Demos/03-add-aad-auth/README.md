@@ -10,11 +10,11 @@ With the application created, now extend it to support authentication with Azure
     1. Add the following code to the top of the `dependencies` section, immediately before the dependencies added in the previous section:
 
         ```gradle
-        implementation('com.microsoft.identity.client:msal:0.1.3') {
+        implementation('com.microsoft.identity.client:msal:0.2.1') {
             exclude group: 'com.android.support', module: 'appcompat-v7'
             exclude group: 'com.google.code.gson'
         }
-        implementation 'com.android.volley:volley:1.0.0'
+        implementation 'com.android.volley:volley:1.1.0'
         ```
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
@@ -44,14 +44,14 @@ With the application created, now extend it to support authentication with Azure
         </activity>
         ```
 
-    1. Replace the `{{REPLACE_WITH_APP_ID}}` in the markup above with the value of the Azure AD application copied when creating a the Azure AD application in a previous demo. Do not remove the **msal** prefix in the markup above.
+    1. Replace the `{{REPLACE_WITH_APP_ID}}` in the markup above with the value of the Azure AD application copied when creating a the Azure AD application in [exercise 1 above](#exercise1). Do not remove the **msal** prefix in the markup above.
 
       > The MSAL Android SDK does not require you to enter the redirect URI provided by the App Registration Portal. It can use the information provided in this step to dynamically generate the redirect URI for you.
 
 1. Add an class to declare a new callback type that you will use:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
 
-        ![Screenshot adding a new Java class](./Images/as-create-aad-01.png)
+        ![Screenshot adding a new Java class](../../Images/as-create-aad-01.png)
 
     1. Name the class **Constants** and select **OK**.
 
@@ -60,16 +60,16 @@ With the application created, now extend it to support authentication with Azure
         public static final String CLIENT_ID = "{{REPLACE_WITH_APP_ID}}";
         ```
 
-    1. Replace the `{{REPLACE_WITH_APP_ID}}` in the markup above with the value of the Azure AD application copied when creating a the Azure AD application in a previous demo. Do not remove the **msal** prefix in the markup above.
+    1. Replace the `{{REPLACE_WITH_APP_ID}}` in the markup above with the value of the Azure AD application copied when creating a the Azure AD application in [exercise 1 above](#exercise1). Do not remove the **msal** prefix in the markup above.
 
 1. Add an interface to declare a new callback type that you will use:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSALAuthenticationCallback**, set the **Kind** to **Interface** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements before the interface declaration:
 
         ```java
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
+        import com.microsoft.identity.client.exception.MsalException;
         ```
 
     1. Add the following code to the `MSALAuthenticationCallback` interface:
@@ -84,7 +84,7 @@ With the application created, now extend it to support authentication with Azure
 1. Add an authentication helper class:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **AuthenticationController** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements before the class declaration:
 
         ```java
         import android.app.Activity;
@@ -93,7 +93,7 @@ With the application created, now extend it to support authentication with Azure
 
         import com.microsoft.identity.client.AuthenticationCallback;
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
+        import com.microsoft.identity.client.exception.MsalException;
         import com.microsoft.identity.client.PublicClientApplication;
         ```
 
@@ -125,6 +125,10 @@ With the application created, now extend it to support authentication with Azure
             }
           }
           return INSTANCE;
+        }
+
+        public static synchronized void resetInstance() {
+          INSTANCE = null;
         }
         ```
 
@@ -175,6 +179,16 @@ With the application created, now extend it to support authentication with Azure
         }
         ```
 
+    1. Add the following code to the `AuthenticationController` class to sign out of the application:
+
+        ```java
+        public void signout() {
+          mApplication.removeAccount(mAuthResult.getAccount());
+          // Reset the AuthenticationManager object
+          AuthenticationController.resetInstance();
+        }
+        ```
+
 1. The callback added in the last step calls the provided callback based on the results of the authentication prompt. While there are many ways to implement the callback, this application will implement it on the **MainActivity**.
     1. In the **Android** tool window, locate and open the file **app > java > com.microsoft.nativeo365calendarevents > MainActivity**.
     1. Update the `MainActivity` class to implement the `MSALAuthenticationCallback`:
@@ -190,8 +204,8 @@ With the application created, now extend it to support authentication with Azure
         import android.util.Log;
 
         import com.microsoft.identity.client.AuthenticationResult;
-        import com.microsoft.identity.client.MsalException;
-        import com.microsoft.identity.client.User;
+        import com.microsoft.identity.client.exception.MsalException;
+        import com.microsoft.identity.client.IAccount;
         ```
 
     1. Add the following methods to implement the `MSALAuthenticationCallback` interface.
@@ -201,11 +215,11 @@ With the application created, now extend it to support authentication with Azure
         // these methods are called by the AuthenticationController
         @Override
         public void onMsalAuthSuccess(AuthenticationResult authenticationResult) {
-          User user = authenticationResult.getUser();
+          IAccount user = authenticationResult.getAccount();
 
-          Toast.makeText(MainActivity.this, "Hello " + user.getName() 
-            + " (" + user.getDisplayableId() + ")!", Toast.LENGTH_LONG
-            ).show();
+          Toast.makeText(MainActivity.this, "Hello " + user.getUsername()
+                  + " (" + user.getAccountIdentifier() + ")!", Toast.LENGTH_LONG
+          ).show();
 
           setPanelVisibility(false, true, false);
         }
@@ -227,13 +241,20 @@ With the application created, now extend it to support authentication with Azure
         //endregion
         ```
 
-1. Wire up the signin button to the authentication process:
-    1. Replace the contents of the `onSignin()` method to the following code:
+1. Wire up the signin and signout buttons to the authentication process:
+    1. Replace the contents of the `onSignin()` & `onSignout()` methods to the following code:
 
         ```java
         private void onSignin() {
           AuthenticationController authController = AuthenticationController.getInstance(this);
           authController.doAcquireToken(this, this);
+        }
+
+        private void onSignout() {
+          AuthenticationController authController = AuthenticationController.getInstance(this);
+          authController.signout();
+
+          setPanelVisibility(true, false, false);
         }
         ```
 
@@ -255,10 +276,10 @@ With the application created, now extend it to support authentication with Azure
     1. When the application loads in the simulator, select the **Signin** button.
     1. The application will load the Azure AD authentication page. Login with your Office 365 Azure AD credentials.
 
-        ![Screenshot of the Azure AD login in the Android simulator](./Images/android-demo-04.png)
+        ![Screenshot of the Azure AD login in the Android simulator](../../Images/android-demo-04.png)
 
         After successfully logging in, you may be prompted to consent to the permissions requested by the application. If prompted, agree to the consent dialog.
 
     1. After completing the authentication and consent process, you will be taken back to the Android application where a toast message will appear with your Azure AD details in it.
 
-        ![Screenshot of the Azure AD login in the Android simulator](./Images/android-demo-05.png)
+        ![Screenshot of the Azure AD login in the Android simulator](../../Images/android-demo-05.png)
