@@ -25,7 +25,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a utility class to the project that acts as a singleton to create an instance of the Microsoft Graph client:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceClientManager** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements after the existing `package` statement:
 
         ```java
         import android.content.Context;
@@ -87,7 +87,7 @@ The last step is to incorporate the Microsoft Graph into the application. For th
 1. Add a class to the project that acts as the Microsoft Graph controller for the application:
     1. In the **Android** tool window, right-click the **app > java > com.microsoft.nativeo365calendarevents** and select **New > Java Class**:
     1. Name the class **MSGraphServiceController** and select **OK**.
-    1. Add the following `import` statements to the existing `import` statements:
+    1. Add the following `import` statements to the existing `package` statement:
 
         ```java
         import android.content.Context;
@@ -216,4 +216,4 @@ The last step is to incorporate the Microsoft Graph into the application. For th
         Select the **Load Events** button to trigger the call to the Microsoft Graph.
     1. After a moment you will see the UI update the a list of some events from your Office 365 calendar:
 
-        ![Screenshot of Office 365 events in the Android simulator](./../../Images/android-demo-06.png)
+        ![Screenshot of Office 365 events in the Android simulator](../../Images/android-demo-06.png)

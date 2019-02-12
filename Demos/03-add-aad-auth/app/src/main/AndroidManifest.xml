@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.microsoft.nativeo365calendarevents">
 
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
   <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -29,8 +26,8 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="msal{{REPLACE_WITH_APP_ID}}"
-          android:host="auth" />
+        <data android:scheme="msal1399c8e1-3f57-439b-8005-2b3cf49e7385"
+              android:host="auth" />
       </intent-filter>
     </activity>
   </application>

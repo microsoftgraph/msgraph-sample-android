@@ -4,25 +4,17 @@ In this demo you will create an Android application and wire up the different sc
 
 1. Open **Android Studio**
 1. Select **Start a new Android Studio project**.
-1. In the new project dialog, set the following values:
-    * **Application name:** NativeO365CalendarEvents
-    * **Company domain:** microsoft.com
+1. In the **Choose your project** dialog, under the **Phone and Tablet** tab, select **Basic Activity** and select **Next**:
+
+    ![Screenshot selecting Basic Activity in the Choose your project dialog](../../Images/as-createproject-03.png)
+
+1. In the **Configure your project** dialog, set the following values:
+    * **Name:** NativeO365CalendarEvents
+    * **Package name:** com.microsoft.nativeo365calendarevents
+    * **Language:** Java
+    * **Minimum API Level:** API 23: Android 6.0 (Marshmallow)
 
     ![Screenshot of the new project dialog in Android Studio](../../Images/as-createproject-01.png)
-
-1. In the **Target Android Devices** dialog, set the following values and select **Next**:
-    * **Phone and Tablet**: selected and pick the desired Android version you want to target... select an API version 23 or higher
-    * leave all other options selected
-
-    ![Screenshot of specifying the target Android devices](../../Images/as-createproject-02.png)
-
-1. In the **Add an Activity to Mobile** dialog, select **Basic Activity** and select **Next**:
-
-    ![Screenshot selecting Basic Activity in the Add Activity to Mobile dialog](../../Images/as-createproject-03.png)
-
-1. In the **Configure Activity** dialog, leave the default values and select **Finish**:
-
-    ![Screenshot specifying the details of the new activity](../../Images/as-createproject-04.png)
 
 1. Add the necessary dependencies to the project:
     1. In the **Android** tool window, locate and open the file **Gradle Scripts > build.gradle (Module: app)**:
@@ -32,13 +24,13 @@ In this demo you will create an Android application and wire up the different sc
     1. Add the following implementations to the top of the existing `dependencies` section:
 
         ```gradle
-        implementation 'com.google.code.gson:gson:2.3.1'
+        implementation 'com.google.code.gson:gson:2.8.2'
         implementation 'com.google.guava:guava:25.1-android'
         ```
 
     1. Sync the dependencies with the project by selecting **File > Sync Project with Gradle Files**.
 
-## Create the Application User Interface
+### Create the Application User Interface
 
 The first step is to create the shell of the user experience; creating a workable storyboard.
 
@@ -92,7 +84,18 @@ The first step is to create the shell of the user experience; creating a workabl
                 android:paddingBottom="5dp"
                 android:paddingLeft="35dp"
                 android:paddingRight="35dp"
-                />
+              />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign out"
+                android:id="@+id/btn_signOut"
+                android:layout_gravity="center"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="35dp"
+                android:paddingRight="35dp"
+              />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -152,9 +155,13 @@ The first step is to create the shell of the user experience; creating a workabl
           setPanelVisibility(false,true,false);
         }
 
+        private void onSignout() {
+          setPanelVisibility(true, false, false);
+        }
+
         private void onLoadEvents() {
           Toast.makeText(MainActivity.this, 
-            "Successfully loaded events from Office 365 calendar",
+            "Successfully loaded events from Office 365 calendar", 
             Toast.LENGTH_LONG
           ).show();
         }
@@ -171,6 +178,7 @@ The first step is to create the shell of the user experience; creating a workabl
         ```java
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         listEvents = findViewById(R.id.list_events);
         panelSignIn = findViewById(R.id.panel_signIn);
         panelEvents = findViewById(R.id.panel_events);
@@ -180,6 +188,13 @@ The first step is to create the shell of the user experience; creating a workabl
           @Override
           public void onClick(View view) {
             onSignin();
+          }
+        });
+
+        (findViewById(R.id.btn_signOut)).setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            onSignout();
           }
         });
 
