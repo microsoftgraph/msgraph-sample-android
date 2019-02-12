@@ -10,6 +10,7 @@ import com.microsoft.identity.client.exception.MsalException;
 import com.microsoft.identity.client.PublicClientApplication;
 
 public class AuthenticationController {
+
   private final String TAG = AuthenticationController.class.getSimpleName();
   private static AuthenticationController INSTANCE;
   private static PublicClientApplication mApplication;
@@ -50,12 +51,6 @@ public class AuthenticationController {
     mApplication.acquireToken(activity, Constants.SCOPES, getAuthInteractiveCallback());
   }
 
-  public void signout() {
-    mApplication.removeAccount(mAuthResult.getAccount());
-    // Reset the AuthenticationManager object
-    AuthenticationController.resetInstance();
-  }
-
   private AuthenticationCallback getAuthInteractiveCallback() {
     return new AuthenticationCallback() {
       @Override
@@ -81,4 +76,11 @@ public class AuthenticationController {
       }
     };
   }
+
+  public void signout() {
+    mApplication.removeAccount(mAuthResult.getAccount());
+    // Reset the AuthenticationManager object
+    AuthenticationController.resetInstance();
+  }
 }
+
