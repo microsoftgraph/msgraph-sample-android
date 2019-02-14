@@ -83,5 +83,4 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
-*.old/
 .vscode/
