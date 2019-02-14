@@ -7,11 +7,43 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class HomeFragment extends Fragment {
+    private static final String USER_NAME = "userName";
+
+    private String mUserName;
+
+    public HomeFragment() {
+
+    }
+
+    public static HomeFragment createInstance(String userName) {
+        HomeFragment fragment = new HomeFragment();
+        Bundle args = new Bundle();
+        args.putString(USER_NAME, userName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mUserName = getArguments().getString(USER_NAME);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View homeView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        if (mUserName != null) {
+            TextView userName = homeView.findViewById(R.id.home_page_username);
+            userName.setText(mUserName);
+        }
+
+        return homeView;
     }
 }

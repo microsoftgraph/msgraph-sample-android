@@ -8,12 +8,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private DrawerLayout drawer;
+    private DrawerLayout mDrawer;
+    private NavigationView mNavigationView;
+    private View mHeaderView;
+    private boolean mIsSignedIn = false;
+    private String mUserName = null;
+    private String mUserEmail = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,24 +30,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = findViewById(R.id.drawer_layout);
+        mDrawer = findViewById(R.id.drawer_layout);
 
         // Add the hamburger menu icon
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        mNavigationView = findViewById(R.id.nav_view);
+
+        // Set user name and email
+        mHeaderView = mNavigationView.getHeaderView(0);
+        setSignedInState(mIsSignedIn);
+
         // Listen for item select events on menu
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         // Load the home fragment by default on startup
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
-            navigationView.setCheckedItem(R.id.nav_home);
+            openHomeFragment(mUserName);
+        }
+    }
+
+    private void setSignedInState(boolean isSignedIn) {
+        mIsSignedIn = isSignedIn;
+
+        Menu menu = mNavigationView.getMenu();
+
+        // Hide/show the Sign in, Calendar, and Sign Out buttons
+        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
+        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
+        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
+
+        TextView userName = mHeaderView.findViewById(R.id.user_name);
+        TextView userEmail = mHeaderView.findViewById(R.id.user_email);
+
+        if (isSignedIn) {
+            // For testing
+            mUserName = "Megan Bowen";
+            mUserEmail = "meganb@contoso.com";
+
+            userName.setText(mUserName);
+            userEmail.setText(mUserEmail);
+        } else {
+            mUserName = null;
+            mUserEmail = null;
+
+            userName.setText("Please sign in");
+            userEmail.setText("");
         }
     }
 
@@ -50,29 +87,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Load the fragment that corresponds to the selected item
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new HomeFragment())
-                        .commit();
+                openHomeFragment(mUserName);
                 break;
             case R.id.nav_calendar:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new CalendarFragment())
-                        .commit();
+                openCalendarFragment();
+                break;
+            case R.id.nav_signin:
+                signIn();
                 break;
             case R.id.nav_signout:
-                Toast.makeText(this, "Sign out", Toast.LENGTH_SHORT).show();
+                signOut();
                 break;
         }
 
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawer.closeDrawer(GravityCompat.START);
 
         return true;
     }
 
+    public void openHomeFragment(String userName) {
+        HomeFragment fragment = HomeFragment.createInstance(userName);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_home);
+    }
+
+    private void openCalendarFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new CalendarFragment())
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_calendar);
+    }
+
+    private void signOut() {
+        setSignedInState(false);
+        openHomeFragment(mUserName);
+    }
+
+    private void signIn() {
+        setSignedInState(true);
+        openHomeFragment(mUserName);
+    }
+
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }

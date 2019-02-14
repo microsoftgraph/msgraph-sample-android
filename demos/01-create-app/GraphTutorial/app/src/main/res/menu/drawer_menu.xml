@@ -18,6 +18,10 @@
     <item android:title="Account">
         <menu>
             <item
+                android:id="@+id/nav_signin"
+                android:icon="@drawable/ic_menu_signin"
+                android:title="Sign In" />
+            <item
                 android:id="@+id/nav_signout"
                 android:icon="@drawable/ic_menu_signout"
                 android:title="Sign Out" />
