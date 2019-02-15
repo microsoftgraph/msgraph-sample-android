@@ -85,6 +85,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void showProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        container.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        progressBar.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
+    }
+
     // Update the menu and get the user's name and email
     private void setSignedInState(boolean isSignedIn) {
         mIsSignedIn = isSignedIn;

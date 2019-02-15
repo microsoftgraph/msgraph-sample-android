@@ -154,10 +154,17 @@ Now, open the **app/res/layout/activity_main.xml** file. Update the layout to a 
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -171,7 +178,7 @@ Now, open the **app/res/layout/activity_main.xml** file. Update the layout to a 
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -257,6 +264,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    public void showProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        container.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        progressBar.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
     }
 
     // Update the menu and get the user's name and email
