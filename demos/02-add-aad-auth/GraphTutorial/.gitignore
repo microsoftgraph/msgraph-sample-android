@@ -84,3 +84,4 @@ lint/tmp/
 # lint/reports/
 
 .vscode/
+oauth_strings.xml

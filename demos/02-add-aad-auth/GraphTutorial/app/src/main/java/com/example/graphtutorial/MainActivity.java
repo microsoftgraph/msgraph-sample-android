@@ -1,6 +1,8 @@
 package com.example.graphtutorial;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -8,10 +10,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.microsoft.identity.client.AuthenticationCallback;
+import com.microsoft.identity.client.AuthenticationResult;
+import com.microsoft.identity.client.exception.MsalClientException;
+import com.microsoft.identity.client.exception.MsalException;
+import com.microsoft.identity.client.exception.MsalServiceException;
+import com.microsoft.identity.client.exception.MsalUiRequiredException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout mDrawer;
@@ -20,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean mIsSignedIn = false;
     private String mUserName = null;
     private String mUserEmail = null;
+    private AuthenticationHelper mAuthHelper = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +64,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) {
             openHomeFragment(mUserName);
         }
+
+        // Get the authentication helper
+        mAuthHelper = AuthenticationHelper.getInstance(getApplicationContext());
+
+        // Sign in
+        signIn();
     }
 
     @Override
@@ -83,6 +102,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mAuthHelper.handleRedirect(requestCode, resultCode, data);
+    }
+
+    public void showProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        container.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar()
+    {
+        FrameLayout container = findViewById(R.id.fragment_container);
+        ProgressBar progressBar = findViewById(R.id.progressbar);
+        progressBar.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
     }
 
     // Update the menu and get the user's name and email
@@ -134,12 +176,70 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void signIn() {
-        setSignedInState(true);
-        openHomeFragment(mUserName);
+        showProgressBar();
+        if (mAuthHelper.hasAccount()) {
+            doSilentSignIn();
+        } else {
+            doInteractiveSignIn();
+        }
     }
 
     private void signOut() {
+        mAuthHelper.signOut();
+
         setSignedInState(false);
         openHomeFragment(mUserName);
+    }
+
+    // Silently sign in - used if there is already a
+    // user account in the MSAL cache
+    private void doSilentSignIn() {
+        mAuthHelper.acquireTokenSilently(getAuthCallback());
+    }
+
+    // Prompt the user to sign in
+    private void doInteractiveSignIn() {
+        mAuthHelper.acquireTokenInteractively(this, getAuthCallback());
+    }
+
+    // Handles the authentication result
+    public AuthenticationCallback getAuthCallback() {
+        return new AuthenticationCallback() {
+
+            @Override
+            public void onSuccess(AuthenticationResult authenticationResult) {
+                // Log the token for debug purposes
+                String accessToken = authenticationResult.getAccessToken();
+                Log.d("AUTH", String.format("Access token: %s", accessToken));
+                hideProgressBar();
+
+                setSignedInState(true);
+                openHomeFragment(mUserName);
+            }
+
+            @Override
+            public void onError(MsalException exception) {
+                // Check the type of exception and handle appropriately
+                if (exception instanceof MsalUiRequiredException) {
+                    Log.d("AUTH", "Interactive login required");
+                    doInteractiveSignIn();
+
+                } else if (exception instanceof MsalClientException) {
+                    // Exception inside MSAL, more info inside MsalError.java
+                    Log.e("AUTH", "Client error authenticating", exception);
+                } else if (exception instanceof MsalServiceException) {
+                    // Exception when communicating with the auth server, likely config issue
+                    Log.e("AUTH", "Service error authenticating", exception);
+                }
+                hideProgressBar();
+            }
+
+            @Override
+            public void onCancel() {
+                // User canceled the authentication
+                Log.d("AUTH", "Authentication canceled");
+                hideProgressBar();
+            }
+        };
     }
 }
