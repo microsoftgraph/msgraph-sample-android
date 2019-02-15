@@ -20,6 +20,8 @@ public class HomeFragment extends Fragment {
 
     public static HomeFragment createInstance(String userName) {
         HomeFragment fragment = new HomeFragment();
+
+        // Add the provided username to the fragment's arguments
         Bundle args = new Bundle();
         args.putString(USER_NAME, userName);
         fragment.setArguments(args);
@@ -39,6 +41,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View homeView = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // If there is a username, replace the "Please sign in" with the username
         if (mUserName != null) {
             TextView userName = homeView.findViewById(R.id.home_page_username);
             userName.setText(mUserName);

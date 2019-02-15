@@ -53,35 +53,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void setSignedInState(boolean isSignedIn) {
-        mIsSignedIn = isSignedIn;
-
-        Menu menu = mNavigationView.getMenu();
-
-        // Hide/show the Sign in, Calendar, and Sign Out buttons
-        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
-        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
-        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
-
-        TextView userName = mHeaderView.findViewById(R.id.user_name);
-        TextView userEmail = mHeaderView.findViewById(R.id.user_email);
-
-        if (isSignedIn) {
-            // For testing
-            mUserName = "Megan Bowen";
-            mUserEmail = "meganb@contoso.com";
-
-            userName.setText(mUserName);
-            userEmail.setText(mUserEmail);
-        } else {
-            mUserName = null;
-            mUserEmail = null;
-
-            userName.setText("Please sign in");
-            userEmail.setText("");
-        }
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         // Load the fragment that corresponds to the selected item
@@ -105,6 +76,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    // Update the menu and get the user's name and email
+    private void setSignedInState(boolean isSignedIn) {
+        mIsSignedIn = isSignedIn;
+
+        Menu menu = mNavigationView.getMenu();
+
+        // Hide/show the Sign in, Calendar, and Sign Out buttons
+        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
+        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
+        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
+
+        // Set the user name and email in the nav drawer
+        TextView userName = mHeaderView.findViewById(R.id.user_name);
+        TextView userEmail = mHeaderView.findViewById(R.id.user_email);
+
+        if (isSignedIn) {
+            // For testing
+            mUserName = "Megan Bowen";
+            mUserEmail = "meganb@contoso.com";
+
+            userName.setText(mUserName);
+            userEmail.setText(mUserEmail);
+        } else {
+            mUserName = null;
+            mUserEmail = null;
+
+            userName.setText("Please sign in");
+            userEmail.setText("");
+        }
+    }
+
+    // Load the "Home" fragment
     public void openHomeFragment(String userName) {
         HomeFragment fragment = HomeFragment.createInstance(userName);
         getSupportFragmentManager().beginTransaction()
@@ -113,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setCheckedItem(R.id.nav_home);
     }
 
+    // Load the "Calendar" fragment
     private void openCalendarFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new CalendarFragment())
@@ -120,22 +133,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setCheckedItem(R.id.nav_calendar);
     }
 
-    private void signOut() {
-        setSignedInState(false);
-        openHomeFragment(mUserName);
-    }
-
     private void signIn() {
         setSignedInState(true);
         openHomeFragment(mUserName);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void signOut() {
+        setSignedInState(false);
+        openHomeFragment(mUserName);
     }
 }
