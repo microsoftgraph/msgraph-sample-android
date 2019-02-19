@@ -18,6 +18,10 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.microsoft.graph.concurrency.ICallback;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.models.extensions.IGraphServiceClient;
+import com.microsoft.graph.models.extensions.User;
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.exception.MsalClientException;
@@ -111,16 +115,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuthHelper.handleRedirect(requestCode, resultCode, data);
     }
 
-    public void showProgressBar()
-    {
+    public void showProgressBar() {
         FrameLayout container = findViewById(R.id.fragment_container);
         ProgressBar progressBar = findViewById(R.id.progressbar);
         container.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    public void hideProgressBar()
-    {
+    public void hideProgressBar() {
         FrameLayout container = findViewById(R.id.fragment_container);
         ProgressBar progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
@@ -144,8 +146,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (isSignedIn) {
             // For testing
-            mUserName = "Megan Bowen";
-            mUserEmail = "meganb@contoso.com";
+            //mUserName = "Megan Bowen";
+            //mUserEmail = "meganb@contoso.com";
 
             userName.setText(mUserName);
             userEmail.setText(mUserEmail);
@@ -211,10 +213,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Log the token for debug purposes
                 String accessToken = authenticationResult.getAccessToken();
                 Log.d("AUTH", String.format("Access token: %s", accessToken));
-                hideProgressBar();
 
-                setSignedInState(true);
-                openHomeFragment(mUserName);
+                // Get Graph client and get user
+                GraphHelper graphHelper = GraphHelper.getInstance(getApplicationContext());
+                graphHelper.getUser(accessToken, getUserCallback());
             }
 
             @Override
@@ -239,6 +241,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // User canceled the authentication
                 Log.d("AUTH", "Authentication canceled");
                 hideProgressBar();
+            }
+        };
+    }
+
+    private ICallback<User> getUserCallback() {
+        return new ICallback<User>() {
+            @Override
+            public void success(User user) {
+                Log.d("AUTH", "User: " + user.displayName);
+
+                mUserName = user.displayName;
+                mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideProgressBar();
+
+                        setSignedInState(true);
+                        openHomeFragment(mUserName);
+                    }
+                });
+
+            }
+
+            @Override
+            public void failure(ClientException ex) {
+                Log.e("AUTH", "Error getting /me", ex);
+                mUserName = "ERROR";
+                mUserEmail = "ERROR";
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideProgressBar();
+
+                        setSignedInState(true);
+                        openHomeFragment(mUserName);
+                    }
+                });
             }
         };
     }
