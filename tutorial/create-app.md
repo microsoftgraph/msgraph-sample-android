@@ -177,7 +177,8 @@ Now, open the **app/res/layout/activity_main.xml** file. Update the layout to a 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar" />
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
