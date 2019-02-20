@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.microsoft.graph.concurrency.ICallback;
@@ -32,14 +31,12 @@ public class CalendarFragment extends Fragment {
         mProgress = getActivity().findViewById(R.id.progressbar);
         showProgressBar();
 
-        // Get a current access token
         AuthenticationHelper.getInstance()
                 .acquireTokenSilently(new AuthenticationCallback() {
                     @Override
                     public void onSuccess(AuthenticationResult authenticationResult) {
                         final GraphHelper graphHelper = GraphHelper.getInstance();
 
-                        // Get the user's events
                         graphHelper.getEvents(authenticationResult.getAccessToken(),
                                 getEventsCallback());
                     }
@@ -64,6 +61,7 @@ public class CalendarFragment extends Fragment {
     }
 
     private void showProgressBar() {
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -81,27 +79,11 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    private void addEventsToList() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ListView eventListView = getView().findViewById(R.id.eventlist);
-
-                EventListAdapter listAdapter = new EventListAdapter(getActivity(),
-                        R.layout.event_list_item, mEventList);
-
-                eventListView.setAdapter(listAdapter);
-            }
-        });
-    }
-
     private ICallback<IEventCollectionPage> getEventsCallback() {
         return new ICallback<IEventCollectionPage>() {
             @Override
             public void success(IEventCollectionPage iEventCollectionPage) {
                 mEventList = iEventCollectionPage.getCurrentPage();
-
-                addEventsToList();
 
                 // Temporary for debugging
                 String jsonEvents = GraphHelper.getInstance().serializeObject(mEventList);
@@ -117,4 +99,5 @@ public class CalendarFragment extends Fragment {
             }
         };
     }
+
 }
