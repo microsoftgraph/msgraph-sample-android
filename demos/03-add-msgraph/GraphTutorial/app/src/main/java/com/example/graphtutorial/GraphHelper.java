@@ -1,7 +1,5 @@
 package com.example.graphtutorial;
 
-import android.content.Context;
-
 import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.http.IHttpRequest;
@@ -20,18 +18,16 @@ import java.util.List;
 public class GraphHelper implements IAuthenticationProvider {
     private static GraphHelper INSTANCE = null;
     private IGraphServiceClient mClient = null;
-    private Context mContext = null;
     private String mAccessToken = null;
 
-    private GraphHelper(Context ctx) {
-        mContext = ctx;
+    private GraphHelper() {
         mClient = GraphServiceClient.builder()
                 .authenticationProvider(this).buildClient();
     }
 
-    public static synchronized GraphHelper getInstance(Context ctx) {
+    public static synchronized GraphHelper getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new GraphHelper(ctx);
+            INSTANCE = new GraphHelper();
         }
 
         return INSTANCE;

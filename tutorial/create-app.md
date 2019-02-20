@@ -289,9 +289,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu menu = mNavigationView.getMenu();
 
         // Hide/show the Sign in, Calendar, and Sign Out buttons
-        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
-        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
-        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
+        menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
 
         // Set the user name and email in the nav drawer
         TextView userName = mHeaderView.findViewById(R.id.user_name);

@@ -82,6 +82,17 @@ public class AuthenticationHelper {
         return INSTANCE;
     }
 
+    // Version called from fragments. Does not create an
+    // instance if one doesn't exist
+    public static synchronized AuthenticationHelper getInstance() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException(
+                    "AuthenticationHelper has not been initialized from MainActivity");
+        }
+
+        return INSTANCE;
+    }
+
     public boolean hasAccount() {
         return !mPCA.getAccounts().isEmpty();
     }
@@ -234,8 +245,6 @@ Start by creating a helper class to hold all of the calls to Microsoft Graph. Ri
 ```java
 package com.example.graphtutorial;
 
-import android.content.Context;
-
 import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.http.IHttpRequest;
@@ -248,18 +257,16 @@ import com.microsoft.graph.requests.extensions.GraphServiceClient;
 public class GraphHelper implements IAuthenticationProvider {
     private static GraphHelper INSTANCE = null;
     private IGraphServiceClient mClient = null;
-    private Context mContext = null;
     private String mAccessToken = null;
 
-    private GraphHelper(Context ctx) {
-        mContext = ctx;
+    private GraphHelper() {
         mClient = GraphServiceClient.builder()
                 .authenticationProvider(this).buildClient();
     }
 
-    public static synchronized GraphHelper getInstance(Context ctx) {
+    public static synchronized GraphHelper getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new GraphHelper(ctx);
+            INSTANCE = new GraphHelper();
         }
 
         return INSTANCE;
@@ -358,7 +365,7 @@ public void onSuccess(AuthenticationResult authenticationResult) {
     Log.d("AUTH", String.format("Access token: %s", accessToken));
 
     // Get Graph client and get user
-    GraphHelper graphHelper = GraphHelper.getInstance(getApplicationContext());
+    GraphHelper graphHelper = GraphHelper.getInstance();
     graphHelper.getUser(accessToken, getUserCallback());
 }
 ```

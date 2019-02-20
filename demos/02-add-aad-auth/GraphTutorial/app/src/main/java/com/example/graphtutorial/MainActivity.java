@@ -136,19 +136,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu menu = mNavigationView.getMenu();
 
         // Hide/show the Sign in, Calendar, and Sign Out buttons
-        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
-        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
-        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
+        menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
 
         // Set the user name and email in the nav drawer
         TextView userName = mHeaderView.findViewById(R.id.user_name);
         TextView userEmail = mHeaderView.findViewById(R.id.user_email);
 
         if (isSignedIn) {
-            // For testing
-            //mUserName = "Megan Bowen";
-            //mUserEmail = "meganb@contoso.com";
-
             userName.setText(mUserName);
             userEmail.setText(mUserEmail);
         } else {
@@ -215,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("AUTH", String.format("Access token: %s", accessToken));
 
                 // Get Graph client and get user
-                GraphHelper graphHelper = GraphHelper.getInstance(getApplicationContext());
+                GraphHelper graphHelper = GraphHelper.getInstance();
                 graphHelper.getUser(accessToken, getUserCallback());
             }
 

@@ -20,17 +20,13 @@ import android.widget.TextView;
 
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.graph.models.extensions.User;
-import com.microsoft.graph.requests.extensions.IEventCollectionPage;
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.exception.MsalClientException;
 import com.microsoft.identity.client.exception.MsalException;
 import com.microsoft.identity.client.exception.MsalServiceException;
 import com.microsoft.identity.client.exception.MsalUiRequiredException;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout mDrawer;
@@ -139,19 +135,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu menu = mNavigationView.getMenu();
 
         // Hide/show the Sign in, Calendar, and Sign Out buttons
-        MenuItem signInItem = menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
-        MenuItem calendarItem = menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
-        MenuItem signOutItem = menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signin).setVisible(!isSignedIn);
+        menu.findItem(R.id.nav_calendar).setVisible(isSignedIn);
+        menu.findItem(R.id.nav_signout).setVisible(isSignedIn);
 
         // Set the user name and email in the nav drawer
         TextView userName = mHeaderView.findViewById(R.id.user_name);
         TextView userEmail = mHeaderView.findViewById(R.id.user_email);
 
         if (isSignedIn) {
-            // For testing
-            //mUserName = "Megan Bowen";
-            //mUserEmail = "meganb@contoso.com";
-
             userName.setText(mUserName);
             userEmail.setText(mUserEmail);
         } else {
@@ -174,40 +166,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Load the "Calendar" fragment
     private void openCalendarFragment() {
-        AuthenticationHelper.getInstance(getApplicationContext())
-                .acquireTokenSilently(new AuthenticationCallback() {
-                    @Override
-                    public void onSuccess(AuthenticationResult authenticationResult) {
-                        final GraphHelper graphHelper = GraphHelper.getInstance(getApplicationContext());
-
-                        graphHelper.getEvents(authenticationResult.getAccessToken(),
-                                new ICallback<IEventCollectionPage>() {
-                                    @Override
-                                    public void success(IEventCollectionPage iEventCollectionPage) {
-                                        List<Event> events = iEventCollectionPage.getCurrentPage();
-
-                                        // Temporary for debugging
-                                        String jsonEvents = graphHelper.serializeObject(events);
-                                        Log.d("GRAPH", jsonEvents);
-                                    }
-
-                                    @Override
-                                    public void failure(ClientException ex) {
-                                        Log.e("GRAPH", "Error getting events", ex);
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onError(MsalException exception) {
-                        Log.e("AUTH", "Could not get token silently", exception);
-                    }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-                });
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new CalendarFragment())
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_calendar);
     }
 
     private void signIn() {
@@ -248,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("AUTH", String.format("Access token: %s", accessToken));
 
                 // Get Graph client and get user
-                GraphHelper graphHelper = GraphHelper.getInstance(getApplicationContext());
+                GraphHelper graphHelper = GraphHelper.getInstance();
                 graphHelper.getUser(accessToken, getUserCallback());
             }
 

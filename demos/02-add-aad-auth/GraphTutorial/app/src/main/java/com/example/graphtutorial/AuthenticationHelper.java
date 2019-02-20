@@ -29,6 +29,17 @@ public class AuthenticationHelper {
         return INSTANCE;
     }
 
+    // Version called from fragments. Does not create an
+    // instance if one doesn't exist
+    public static synchronized AuthenticationHelper getInstance() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException(
+                    "AuthenticationHelper has not been initialized from MainActivity");
+        }
+
+        return INSTANCE;
+    }
+
     public boolean hasAccount() {
         return !mPCA.getAccounts().isEmpty();
     }
