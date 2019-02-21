@@ -25,7 +25,7 @@ implementation 'com.microsoft.graph:microsoft-graph:1.1.+'
 implementation 'com.microsoft.identity.client:msal:0.2.+'
 ```
 
-> ![NOTE]
+> [!NOTE]
 > If you are using a different SDK version, make sure to change the `28.0.0` to match the version of the `com.android.support:appcompat-v7` dependency already present in **build.gradle**.
 
 Add a `packagingOptions` inside the `android` value in the **build.gradle (Module: app)** file.
