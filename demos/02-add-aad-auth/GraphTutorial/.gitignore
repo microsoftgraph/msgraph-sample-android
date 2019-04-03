@@ -41,6 +41,7 @@ captures/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml
+.idea/navEditor.xml
 .idea/assetWizardSettings.xml
 .idea/dictionaries
 .idea/libraries
@@ -82,5 +83,5 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
-*.old/
 .vscode/
+oauth_strings.xml

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="oauth_app_id">YOUR_APP_ID_HERE</string>
+    <string name="oauth_redirect_uri">msalYOUR_APP_ID_HERE</string>
+    <string-array name="oauth_scopes">
+        <item>User.Read</item>
+        <item>Calendars.Read</item>
+    </string-array>
+</resources>
