@@ -28,17 +28,18 @@ This module has been recorded and is available in the Office Development YouTube
 
 ## Contributors
 
-| Roles                | Author(s)                                               |
-| -------------------- | ------------------------------------------------------- |
-| Lab Manuals / Slides | Andrew Connell (Microsoft MVP, Voitanos) @andrewconnell |
-| Graph Java SDK Code  | vikyding (Microsoft) @vikyding                          |
-| Sponsor / Support    | Yina Arenas (Microsoft) @yinaa                          |
+|        Roles         |                                       Author(s)                                       |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| Lab Manuals / Slides | Andrew Connell (Microsoft MVP, Voitanos) [@andrewconnell](//github.com/andrewconnell) |
+| Graph Java SDK Code  | vikyding (Microsoft) [@vikyding](//github.com/vikyding)                               |
+| Sponsor / Support    | Yina Arenas (Microsoft) [@yinaa](//github.com/yinaa)                                  |
 
 ## Version history
 
-| Version | Date               | Comments                                                                   |
+| Version |        Date        |                                  Comments                                  |
 | ------- | ------------------ | -------------------------------------------------------------------------- |
-| 1.6     | February 20, 2019  | Updated to docs.microsoft.com format      |
+| 1.7     | March 30, 2019     | FY2019Q4 content refresh                                                   |
+| 1.6     | February 20, 2019  | Updated to docs.microsoft.com format                                       |
 | 1.5     | February 12, 2019  | Updated multiple dependencies applied quarterly refresh                    |
 | 1.4     | November 8, 2018   | Updated Graph Java SDK to GA v1 & applied quarterly refresh                |
 | 1.3     | September 12, 2018 | Replaced Graph Andriod SDK with Graph Java SDK & applied quarterly refresh |
