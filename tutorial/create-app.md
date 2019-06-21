@@ -22,7 +22,7 @@ Expand **Gradle Scripts**, then open the **build.gradle (Module: app)** file. Ad
 ```Gradle
 implementation 'com.android.support:design:28.0.0'
 implementation 'com.microsoft.graph:microsoft-graph:1.4.0'
-implementation 'com.microsoft.identity.client:msal:0.2.+'
+implementation 'com.microsoft.identity.client:msal:0.2.2'
 ```
 
 > [!NOTE]
