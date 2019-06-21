@@ -28,14 +28,14 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
     ![A screenshot of the Register an application page](../../tutorial/images/aad-register-an-app.png)
 
-1. Choose **Register**. On the **Xamarin Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
+1. Select **Register**. On the **Xamarin Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
 
     ![A screenshot of the application ID of the new app registration](../../tutorial/images/aad-application-id.png)
 
-1. Select the **Add a Redirect URI** link. On the **Redirect URIs** page, locate the **Suggested Redirect URIs for public clients (mobile, desktop)** section. Select the URI that begins with `msal` and copy it, then choose **Save**. Save the copied redirect URI, you will need it in the next step.
+1. Select the **Add a Redirect URI** link. On the **Redirect URIs** page, locate the **Suggested Redirect URIs for public clients (mobile, desktop)** section. Select the URI that begins with `msal` and copy it, then select **Save**. Save the copied redirect URI, you will need it in the next step.
 
     ![A screenshot of the Redirect URIs page](../../tutorial/images/aad-redirect-uris.png)
 
 ## Run the sample
 
-In Android Studio, choose **Run 'app'** on the **Run** menu.
+In Android Studio, select **Run 'app'** on the **Run** menu.

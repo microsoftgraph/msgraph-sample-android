@@ -2,7 +2,7 @@
 
 In this exercise you will extend the application from the previous exercise to support authentication with Azure AD. This is required to obtain the necessary OAuth access token to call the Microsoft Graph. In this step you will integrate the [Microsoft Authentication Library (MSAL) for Android](https://github.com/AzureAD/microsoft-authentication-library-for-android) into the application.
 
-Right-click the **app/res/values** folder and choose **New**, then **Values resource file**. Name the file `oauth_strings` and choose **OK**. Add the following values to the `resources` element.
+Right-click the **app/res/values** folder and select **New**, then **Values resource file**. Name the file `oauth_strings` and select **OK**. Add the following values to the `resources` element.
 
 ```xml
 <string name="oauth_app_id">YOUR_APP_ID_HERE</string>
@@ -12,6 +12,8 @@ Right-click the **app/res/values** folder and choose **New**, then **Values reso
     <item>Calendars.Read</item>
 </string-array>
 ```
+
+Replace `YOUR_APP_ID_HERE` with the app ID from your app registration.
 
 > [!IMPORTANT]
 > If you're using source control such as git, now would be a good time to exclude the `oauth_strings.xml` file from source control to avoid inadvertently leaking your app ID.
@@ -48,7 +50,7 @@ This allows MSAL to use a browser to authenticate the user, and registers your r
 
 ### Implement an authentication helper
 
-Right-click the **app/java/com.example.graphtutorial** folder and choose **New**, then **Java Class**. Name the class `AuthenticationHelper` and choose **OK**. Open the new file and replace its contents with the following.
+Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `AuthenticationHelper` and select **OK**. Open the new file and replace its contents with the following.
 
 ```java
 package com.example.graphtutorial;
@@ -240,7 +242,7 @@ Save your changes and run the app. When you tap the **Sign in** menu item, a bro
 
 ## Get user details
 
-Start by creating a helper class to hold all of the calls to Microsoft Graph. Right-click the **app/java/com.example.graphtutorial** folder and choose **New**, then **Java Class**. Name the class `GraphHelper` and choose **OK**. Open the new file and replace its contents with the following.
+Start by creating a helper class to hold all of the calls to Microsoft Graph. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `GraphHelper` and select **OK**. Open the new file and replace its contents with the following.
 
 ```java
 package com.example.graphtutorial;

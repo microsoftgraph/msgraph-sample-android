@@ -16,10 +16,10 @@ In this exercise you will create a new Azure AD native application using the Azu
 
     ![A screenshot of the Register an application page](./images/aad-register-an-app.png)
 
-1. Choose **Register**. On the **Android Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
+1. Select **Register**. On the **Android Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
 
     ![A screenshot of the application ID of the new app registration](./images/aad-application-id.png)
 
-1. Select the **Add a Redirect URI** link. On the **Redirect URIs** page, locate the **Suggested Redirect URIs for public clients (mobile, desktop)** section. Select the URI that begins with `msal` and copy it, then choose **Save**. Save the copied redirect URI, you will need it in the next step.
+1. Select the **Add a Redirect URI** link. On the **Redirect URIs** page, locate the **Suggested Redirect URIs for public clients (mobile, desktop)** section. Select the URI that begins with `msal` and copy it, then select **Save**. Save the copied redirect URI, you will need it in the next step.
 
     ![A screenshot of the Redirect URIs page](./images/aad-redirect-uris.png)

@@ -166,7 +166,7 @@ Now you can replace the JSON dump with something to display the results in a use
     android:dividerHeight="1dp" />
 ```
 
-Next, create a layout for each item in the `ListView`. Right-click the **app/res/layout** folder and choose **New**, then **Layout resource file**. Name the file `event_list_item`, change the **Root element** to `RelativeLayout`, and choose **OK**. Open the **event_list_item.xml** file and replace its contents with the following.
+Next, create a layout for each item in the `ListView`. Right-click the **app/res/layout** folder and select **New**, then **Layout resource file**. Name the file `event_list_item`, change the **Root element** to `RelativeLayout`, and select **OK**. Open the **event_list_item.xml** file and replace its contents with the following.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -232,7 +232,7 @@ Next, create a layout for each item in the `ListView`. Right-click the **app/res
 
 Now create a custom list adapter for the `ListView`. This is necessary to create the views for the items in the list, and to map the fields of each `Event` to the appropriate `TextView` in the view.
 
-Right-click the **app/java/com.example.graphtutorial** folder and choose **New**, then **Java Class**. Name the class `EventListAdapter` and choose **OK**. Open the **EventListAdapter** file and replace its contents with the following.
+Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `EventListAdapter` and select **OK**. Open the **EventListAdapter** file and replace its contents with the following.
 
 ```java
 package com.example.graphtutorial;

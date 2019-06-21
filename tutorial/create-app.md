@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD002 MD041 -->
 
-Open Android Studio, and select **Start a new Android Studio project** on the welcome screen. In the **Create New Project** dialog, select **Empty Activity**, then choose **Next**.
+Open Android Studio, and select **Start a new Android Studio project** on the welcome screen. In the **Create New Project** dialog, select **Empty Activity**, then select **Next**.
 
 ![A screenshot of the Create New Project dialog in Android Studio](./images/choose-project.png)
 
@@ -21,7 +21,7 @@ Expand **Gradle Scripts**, then open the **build.gradle (Module: app)** file. Ad
 
 ```Gradle
 implementation 'com.android.support:design:28.0.0'
-implementation 'com.microsoft.graph:microsoft-graph:1.1.+'
+implementation 'com.microsoft.graph:microsoft-graph:1.4.0'
 implementation 'com.microsoft.identity.client:msal:0.2.+'
 ```
 
@@ -44,19 +44,19 @@ The application will use a [navigation drawer](https://developer.android.com/tra
 
 ### Create a navigation drawer
 
-Start by creating icons for the app's navigation menu. Right-click the **app/res/drawable** folder and select **New**, then **Vector Asset**. Click the icon button next to **Clip Art**. In the **Select Icon** window, type `home` in the search bar, then select the **Home** icon and choose **OK**. Change the **Name** to `ic_menu_home`.
+Start by creating icons for the app's navigation menu. Right-click the **app/res/drawable** folder and select **New**, then **Vector Asset**. Click the icon button next to **Clip Art**. In the **Select Icon** window, type `home` in the search bar, then select the **Home** icon and select **OK**. Change the **Name** to `ic_menu_home`.
 
 ![A screenshot of the Configure Vector Asset window](./images/create-icon.png)
 
-Choose **Next**, then **Finish**. Repeat this step to create two more icons.
+Select **Next**, then **Finish**. Repeat this step to create two more icons.
 
 - Name: `ic_menu_calendar`, Icon: `event`
 - Name: `ic_menu_signout`, Icon: `exit to app`
 - Name: `ic_menu_signin`, Icon: `person add`
 
-Next, create a menu for the application. Right-click the **res** folder and choose **New**, then **Android Resource Directory**. Change the **Resource type** to `menu` and choose **OK**.
+Next, create a menu for the application. Right-click the **res** folder and select **New**, then **Android Resource Directory**. Change the **Resource type** to `menu` and select **OK**.
 
-Right-click the new **menu** folder and choose **New**, then **Menu resource file**. Name the file `drawer_menu` and choose **OK**. When the file opens, choose the **Text** tab to view the XML, then replace the entire contents with the following.
+Right-click the new **menu** folder and select **New**, then **Menu resource file**. Name the file `drawer_menu` and select **OK**. When the file opens, select the **Text** tab to view the XML, then replace the entire contents with the following.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -101,9 +101,9 @@ Now update the application's theme to be compatible with a navigation drawer. Op
 <item name="android:statusBarColor">@android:color/transparent</item>
 ```
 
-Next, create a header for the menu. Right-click the **app/res/layout** folder. Choose **New**, then **Layout resource file**. Name the file `nav_header` and change the **Root element** to `LinearLayout`. Choose **OK**.
+Next, create a header for the menu. Right-click the **app/res/layout** folder. Select **New**, then **Layout resource file**. Name the file `nav_header` and change the **Root element** to `LinearLayout`. Select **OK**.
 
-Open the **nav_header.xml** file and choose the **Text** tab. Replace the entire contents with the following.
+Open the **nav_header.xml** file and select the **Text** tab. Replace the entire contents with the following.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -215,6 +215,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -318,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 ### Add fragments
 
-Right-click the **app/res/layout** folder and choose **New**, then **Layout resource file**. Name the file `fragment_home` and change the **Root element** to `RelativeLayout`. Choose **OK**.
+Right-click the **app/res/layout** folder and select **New**, then **Layout resource file**. Name the file `fragment_home` and change the **Root element** to `RelativeLayout`. Select **OK**.
 
 Open the **fragment_home.xml** file and replace its contents with the following.
 
@@ -354,7 +356,7 @@ Open the **fragment_home.xml** file and replace its contents with the following.
 </RelativeLayout>
 ```
 
-Next, right-click the **app/res/layout** folder and choose **New**, then **Layout resource file**. Name the file `fragment_calendar` and change the **Root element** to `RelativeLayout`. Choose **OK**.
+Next, right-click the **app/res/layout** folder and select **New**, then **Layout resource file**. Name the file `fragment_calendar` and change the **Root element** to `RelativeLayout`. Select **OK**.
 
 Open the **fragment_calendar.xml** file and replace its contents with the following.
 
@@ -374,7 +376,7 @@ Open the **fragment_calendar.xml** file and replace its contents with the follow
 </RelativeLayout>
 ```
 
-Now, right-click the **app/java/com.example.graphtutorial** folder and choose **New**, then **Java Class**. Name the class `HomeFragment` and set the **Superclass** to `android.support.v4.app.Fragment`. Choose **OK**. Open the **HomeFragment** file and replace its contents with the following.
+Now, right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `HomeFragment` and set the **Superclass** to `android.support.v4.app.Fragment`. Select **OK**. Open the **HomeFragment** file and replace its contents with the following.
 
 ```java
 package com.example.graphtutorial;
@@ -431,7 +433,7 @@ public class HomeFragment extends Fragment {
 }
 ```
 
-Next, right-click the **app/java/com.example.graphtutorial** folder and choose **New**, then **Java Class**. Name the class `CalendarFragment` and set the **Superclass** to `android.support.v4.app.Fragment`. Choose **OK**.
+Next, right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `CalendarFragment` and set the **Superclass** to `android.support.v4.app.Fragment`. Select **OK**.
 
 Open the **CalendarFragment** file and add the following function to the `CalendarFragment` class.
 
@@ -510,6 +512,6 @@ if (savedInstanceState == null) {
 }
 ```
 
-Save all of your changes. On the **Run** menu, choose **Run 'app'**. The app's menu should work to navigate between the two fragments and change when you tap the **Sign in** or **Sign out** buttons.
+Save all of your changes. On the **Run** menu, select **Run 'app'**. The app's menu should work to navigate between the two fragments and change when you tap the **Sign in** or **Sign out** buttons.
 
 ![Screenshot of the application](./images/welcome-page.png)
