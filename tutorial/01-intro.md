@@ -12,6 +12,14 @@ Before you start this tutorial, you should have [Android Studio](https://develop
 > [!NOTE]
 > This tutorial was written with Android Studio version 3.3.1 with the 1.8.0 JRE and the Android 9.0 SDK. The steps in this guide may work with other versions, but that has not been tested.
 
+## Watch the tutorial
+
+This module has been recorded and is available in the Office Development YouTube channel.
+
+<!-- markdownlint-disable MD034 -->
+> [!VIDEO https://www.youtube-nocookie.com/embed/Yk0FMwXanck]
+<!-- markdownlint-enable MD034 -->
+
 ## Feedback
 
 Please provide any feedback on this tutorial in the [GitHub repository](https://github.com/microsoftgraph/msgraph-training-android).
