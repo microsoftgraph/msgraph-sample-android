@@ -16,9 +16,11 @@ Before you start this tutorial, you should have [Android Studio](https://develop
 
 This module has been recorded and is available in the Office Development YouTube channel.
 
-<!-- markdownlint-disable MD034 -->
-> [!VIDEO https://www.youtube-nocookie.com/embed/Yk0FMwXanck]
-<!-- markdownlint-enable MD034 -->
+<!-- markdownlint-disable MD033 MD034 -->
+<br/>
+
+> [!VIDEO https://www.youtube-nocookie.com/embed/BLmOmv4FSsQ]
+<!-- markdownlint-enable MD033 MD034 -->
 
 ## Feedback
 
