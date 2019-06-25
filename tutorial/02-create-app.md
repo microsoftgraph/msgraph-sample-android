@@ -52,7 +52,9 @@ The application will use a [navigation drawer](https://developer.android.com/tra
 
 ### Create a navigation drawer
 
-In this section you will create icons for the app's navigation menu, create a menu for the application, and update the application's theme to be compatible with a navigation drawer.
+In this section you will create icons for the app's navigation menu, create a menu for the application, and update the application's theme and layout to be compatible with a navigation drawer.
+
+#### Create icons
 
 1. Right-click the **app/res/drawable** folder and select **New**, then **Vector Asset**.
 
@@ -71,6 +73,8 @@ In this section you will create icons for the app's navigation menu, create a me
     - Name: `ic_menu_calendar`, Icon: `event`
     - Name: `ic_menu_signout`, Icon: `exit to app`
     - Name: `ic_menu_signin`, Icon: `person add`
+
+#### Create the menu
 
 1. Right-click the **res** folder and select **New**, then **Android Resource Directory**.
 
@@ -116,6 +120,8 @@ In this section you will create icons for the app's navigation menu, create a me
 
     </menu>
     ```
+
+#### Update application theme and layout
 
 1. Open the **app/res/values/styles.xml** file and replace `Theme.AppCompat.Light.DarkActionBar` with `Theme.AppCompat.Light.NoActionBar`.
 
