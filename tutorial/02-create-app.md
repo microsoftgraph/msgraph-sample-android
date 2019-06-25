@@ -565,4 +565,4 @@ In this section you will create fragments for the home and calendar views.
 
 The app's menu should work to navigate between the two fragments and change when you tap the **Sign in** or **Sign out** buttons.
 
-![Screenshot of the application](./images/welcome-page.png)
+![Screenshot of the application](./images/app-screens.png)
