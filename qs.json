@@ -1,0 +1,7 @@
+{
+  "sourceDirectory": ".\\Demos\\03-add-msgraph",
+  "exampleConfigFile": ".\\GraphTutorial\\oauth_strings.xml.example",
+  "configFile": "oauth_strings.xml",
+  "archiveFile": "AndroidQuickStart.zip",
+  "zipReadMe": ".\\README.md"
+}

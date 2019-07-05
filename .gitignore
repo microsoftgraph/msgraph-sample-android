@@ -84,3 +84,5 @@ lint/tmp/
 
 *.old/
 .vscode/
+
+AndroidQuickStart.zip
