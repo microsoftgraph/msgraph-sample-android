@@ -38,7 +38,7 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
 ## Configure the sample
 
-1. Rename the `oauth_strings.xml.example` file to `oauth_strings.xml`.
+1. Rename the `oauth_strings.xml.example` file to `oauth_strings.xml` and move the file into the `GraphTutorial/app/src/main/res/values` directory.
 1. Edit the `oauth_strings.xml` file and make the following changes.
     1. Replace `YOUR_APP_ID_HERE` with the **Application Id** you got from the Azure portal.
 
