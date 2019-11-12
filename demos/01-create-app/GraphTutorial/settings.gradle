@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='GraphTutorial'
+rootProject.name='Graph Tutorial'
