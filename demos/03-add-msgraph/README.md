@@ -4,7 +4,7 @@
 
 To run the completed project in this folder, you need the following:
 
-- [Android Studio](https://developer.android.com/studio/) installed on your development machine. (**Note:** This tutorial was written with Android Studio version 3.3.1 with the 1.8.0 JRE and the Android 9.0 SDK. The steps in this guide may work with other versions, but that has not been tested.)
+- [Android Studio](https://developer.android.com/studio/) installed on your development machine. (**Note:** This tutorial was written with Android Studio version 3.5.1 and the Android 10.0 SDK. The steps in this guide may work with other versions, but that has not been tested.)
 - Either a personal Microsoft account with a mailbox on Outlook.com, or a Microsoft work or school account.
 
 If you don't have a Microsoft account, there are a couple of options to get a free account:
@@ -24,22 +24,18 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
     - Set **Name** to `Android Graph Tutorial`.
     - Set **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts**.
-    - Leave **Redirect URI** empty.
+    - Under **Redirect URI**, set the dropdown to **Public client/native (mobile & desktop)** and set the value to `msauth://YOUR_PACKAGE_NAME/callback`, replacing `YOUR_PACKAGE_NAME` with your project's package name.
 
     ![A screenshot of the Register an application page](../../tutorial/images/aad-register-an-app.png)
 
-1. Select **Register**. On the **Xamarin Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
+1. Select **Register**. On the **Android Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
 
     ![A screenshot of the application ID of the new app registration](../../tutorial/images/aad-application-id.png)
 
-1. Select the **Add a Redirect URI** link. On the **Redirect URIs** page, locate the **Suggested Redirect URIs for public clients (mobile, desktop)** section. Select the URI that begins with `msal` and copy it, then select **Save**. Save the copied redirect URI, you will need it in the next step.
-
-    ![A screenshot of the Redirect URIs page](../../tutorial/images/aad-redirect-uris.png)
-
 ## Configure the sample
 
-1. Rename the `oauth_strings.xml.example` file to `oauth_strings.xml` and move the file into the `GraphTutorial/app/src/main/res/values` directory.
-1. Edit the `oauth_strings.xml` file and make the following changes.
+1. Rename the `msal_config.json.example` file to `msal_config.json` and move the file into the `GraphTutorial/app/src/main/res/raw` directory.
+1. Edit the `msal_config.json` file and make the following changes.
     1. Replace `YOUR_APP_ID_HERE` with the **Application Id** you got from the Azure portal.
 
 ## Run the sample

@@ -4,7 +4,7 @@ The version of the project in this directory reflects completing the tutorial up
 
 > **Note:** It is assumed that you have already registered an application in the Azure portal as specified in [Register the app in the portal](https://docs.microsoft.com/graph/tutorials/android?tutorial-step=2). You need to configure this version of the sample as follows:
 >
-> 1. Rename the `./GraphTutorial/oauth_strings.xml.example` file to `oauth_strings.xml`.
-> 1. Move the `oauth_strings.xml` file to the `./GraphTutorial/app/src/main/res/values` directory.
-> 1. Edit the `oauth_strings.xml` file and make the following changes.
+> 1. Rename the `./GraphTutorial/msal_config.json.example` file to `msal_config.json`.
+> 1. Move the `msal_config.json` file to the `./GraphTutorial/app/src/main/res/raw` directory.
+> 1. Edit the `msal_config.json` file and make the following changes.
 >     1. Replace `YOUR_APP_ID_HERE` with the **Application Id** you got from the Azure portal.
