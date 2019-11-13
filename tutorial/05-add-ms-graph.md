@@ -114,7 +114,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
     }
     ```
 
-1. Override the `onCreate` function in the `GraphHelper` class to get the user's events from Microsoft Graph.
+1. Override the `onCreate` function in the `CalendarFragment` class to get the user's events from Microsoft Graph.
 
     ```java
     @Override
