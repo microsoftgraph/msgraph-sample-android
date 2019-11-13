@@ -85,4 +85,6 @@ lint/tmp/
 *.old/
 .vscode/
 
+msal_config.json
+
 AndroidQuickStart.zip

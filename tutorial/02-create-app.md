@@ -13,7 +13,7 @@ Begin by creating a new Android Studio project.
     ![A screenshot of the Configure your project dialog](./images/configure-project.png)
 
 > [!IMPORTANT]
-> Ensure that you enter the exact same name for the project that is specified in these lab instructions. The project name becomes part of the namespace in the code. The code inside these instructions depends on the namespace matching the project name specified in these instructions. If you use a different project name the code will not compile unless you adjust all the namespaces to match the project name you enter when you create the project.
+> The code and instructions in this tutorial use the package name **com.example.graphtutorial**. If you use a different package name when creating the project, be sure to use your package name wherever you see this value.
 
 ## Install dependencies
 
