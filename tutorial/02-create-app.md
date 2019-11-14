@@ -8,18 +8,18 @@ Begin by creating a new Android Studio project.
 
     ![A screenshot of the Create New Project dialog in Android Studio](./images/choose-project.png)
 
-1. In the **Configure your project** dialog, set the **Name** to `Graph Tutorial`, ensure the **Language** field is set to `Java`, and ensure the **Minimum API level** is set to `API 27: Android 8.1 (Oreo)`. Modify the **Package name** and **Save location** as needed. Select **Finish**.
+1. In the **Configure your project** dialog, set the **Name** to `Graph Tutorial`, ensure the **Language** field is set to `Java`, and ensure the **Minimum API level** is set to `API 29: Android 10.0 (Q)`. Modify the **Package name** and **Save location** as needed. Select **Finish**.
 
     ![A screenshot of the Configure your project dialog](./images/configure-project.png)
 
 > [!IMPORTANT]
-> Ensure that you enter the exact same name for the project that is specified in these lab instructions. The project name becomes part of the namespace in the code. The code inside these instructions depends on the namespace matching the project name specified in these instructions. If you use a different project name the code will not compile unless you adjust all the namespaces to match the project name you enter when you create the project.
+> The code and instructions in this tutorial use the package name **com.example.graphtutorial**. If you use a different package name when creating the project, be sure to use your package name wherever you see this value.
 
 ## Install dependencies
 
 Before moving on, install some additional dependencies that you will use later.
 
-- `com.android.support:design` to make the navigation drawer layouts available to the app.
+- `com.google.android.material:material` to make the [navigation view](https://material.io/develop/android/components/navigation-view/) available to the app.
 - [Microsoft Authentication Library (MSAL) for Android](https://github.com/AzureAD/microsoft-authentication-library-for-android) to handle Azure AD authentication and token management.
 - [Microsoft Graph SDK for Java](https://github.com/microsoftgraph/msgraph-sdk-java) for making calls to the Microsoft Graph.
 
@@ -28,15 +28,12 @@ Before moving on, install some additional dependencies that you will use later.
 1. Add the following lines inside the `dependencies` value.
 
     ```Gradle
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.microsoft.graph:microsoft-graph:1.4.0'
-    implementation 'com.microsoft.identity.client:msal:0.2.2'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.microsoft.identity.client:msal:1.0.0'
+    implementation 'com.microsoft.graph:microsoft-graph:1.6.0'
     ```
 
-    > [!NOTE]
-    > If you are using a different SDK version, make sure to change the `28.0.0` to match the version of the `com.android.support:appcompat-v7` dependency already present in **build.gradle**.
-
-1. Add a `packagingOptions` inside the `android` value in the **build.gradle (Module: app)** file.
+1. Add a `packagingOptions` value inside the `android` value in the **build.gradle (Module: app)** file.
 
     ```Gradle
     packagingOptions {
@@ -48,7 +45,7 @@ Before moving on, install some additional dependencies that you will use later.
 
 ## Design the app
 
-The application will use a [navigation drawer](https://developer.android.com/training/implementing-navigation/nav-drawer) to navigate between different views. In this step you will update the activity to use a navigation drawer layout, and add fragments for the views.
+The application will use a navigation drawer to navigate between different views. In this step you will update the activity to use a navigation drawer layout, and add fragments for the views.
 
 ### Create a navigation drawer
 
@@ -179,7 +176,7 @@ In this section you will create icons for the app's navigation menu, create a me
 
     ```xml
     <?xml version="1.0" encoding="utf-8"?>
-    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/drawer_layout"
@@ -201,7 +198,7 @@ In this section you will create icons for the app's navigation menu, create a me
                 android:layout_centerInParent="true"
                 android:visibility="gone"/>
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -216,7 +213,7 @@ In this section you will create icons for the app's navigation menu, create a me
                 android:layout_below="@+id/toolbar" />
         </RelativeLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -224,7 +221,7 @@ In this section you will create icons for the app's navigation menu, create a me
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu" />
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
     ```
 
 1. Open **app/res/values/strings.xml** and add the following elements inside the `resources` element.
@@ -239,20 +236,20 @@ In this section you will create icons for the app's navigation menu, create a me
     ```java
     package com.example.graphtutorial;
 
-    import android.support.annotation.NonNull;
-    import android.support.design.widget.NavigationView;
-    import android.support.v4.view.GravityCompat;
-    import android.support.v4.widget.DrawerLayout;
-    import android.support.v7.app.ActionBarDrawerToggle;
-    import android.support.v7.app.AppCompatActivity;
     import android.os.Bundle;
-    import android.support.v7.widget.Toolbar;
     import android.view.Menu;
     import android.view.MenuItem;
     import android.view.View;
     import android.widget.FrameLayout;
     import android.widget.ProgressBar;
     import android.widget.TextView;
+    import androidx.annotation.NonNull;
+    import androidx.appcompat.app.ActionBarDrawerToggle;
+    import androidx.appcompat.app.AppCompatActivity;
+    import androidx.appcompat.widget.Toolbar;
+    import androidx.core.view.GravityCompat;
+    import androidx.drawerlayout.widget.DrawerLayout;
+    import com.google.android.material.navigation.NavigationView;
 
     public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
         private DrawerLayout mDrawer;
@@ -419,7 +416,7 @@ In this section you will create fragments for the home and calendar views.
 
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `HomeFragment` and set the **Superclass** to `android.support.v4.app.Fragment`, then select **OK**.
+1. Name the class `HomeFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
 
 1. Open the **HomeFragment** file and replace its contents with the following.
 
@@ -480,15 +477,28 @@ In this section you will create fragments for the home and calendar views.
 
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `CalendarFragment` and set the **Superclass** to `android.support.v4.app.Fragment`, then select **OK**.
+1. Name the class `CalendarFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
 
-1. Open the **CalendarFragment** file and add the following function to the `CalendarFragment` class.
+1. Open the **CalendarFragment** file and replace its contents with the following.
 
     ```java
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
+    package com.example.graphtutorial;
+
+    import android.os.Bundle;
+    import android.view.LayoutInflater;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.fragment.app.Fragment;
+
+    public class CalendarFragment extends Fragment {
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_calendar, container, false);
+        }
     }
     ```
 

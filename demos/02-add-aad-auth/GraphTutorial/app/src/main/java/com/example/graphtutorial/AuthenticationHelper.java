@@ -2,23 +2,36 @@ package com.example.graphtutorial;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.microsoft.identity.client.AuthenticationCallback;
-import com.microsoft.identity.client.IAccount;
+import com.microsoft.identity.client.IPublicClientApplication;
+import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 import com.microsoft.identity.client.PublicClientApplication;
+import com.microsoft.identity.client.exception.MsalException;
 
 // Singleton class - the app only needs a single instance
 // of PublicClientApplication
 public class AuthenticationHelper {
     private static AuthenticationHelper INSTANCE = null;
-    private PublicClientApplication mPCA = null;
-    private String[] mScopes;
+    private ISingleAccountPublicClientApplication mPCA = null;
+    private String[] mScopes = { "User.Read", "Calendars.Read" };
 
     private AuthenticationHelper(Context ctx) {
-        String appId = ctx.getResources().getString(R.string.oauth_app_id);
-        mScopes = ctx.getResources().getStringArray(R.array.oauth_scopes);
-        mPCA = new PublicClientApplication(ctx, appId);
+        PublicClientApplication.createSingleAccountPublicClientApplication(ctx, R.raw.msal_config,
+            new IPublicClientApplication.ISingleAccountApplicationCreatedListener() {
+                @Override
+                public void onCreated(ISingleAccountPublicClientApplication application) {
+                    mPCA = application;
+                }
+
+                @Override
+                public void onError(MsalException exception) {
+                    Log.e("AUTHHELPER", "Error creating MSAL application", exception);
+                }
+            });
     }
 
     public static synchronized AuthenticationHelper getInstance(Context ctx) {
@@ -34,31 +47,33 @@ public class AuthenticationHelper {
     public static synchronized AuthenticationHelper getInstance() {
         if (INSTANCE == null) {
             throw new IllegalStateException(
-                    "AuthenticationHelper has not been initialized from MainActivity");
+                "AuthenticationHelper has not been initialized from MainActivity");
         }
 
         return INSTANCE;
     }
 
-    public boolean hasAccount() {
-        return !mPCA.getAccounts().isEmpty();
-    }
-
-    public void handleRedirect(int requestCode, int resultCode, Intent data) {
-        mPCA.handleInteractiveRequestRedirect(requestCode, resultCode, data);
-    }
-
     public void acquireTokenInteractively(Activity activity, AuthenticationCallback callback) {
-        mPCA.acquireToken(activity, mScopes, callback);
+        mPCA.signIn(activity, null, mScopes, callback);
     }
 
     public void acquireTokenSilently(AuthenticationCallback callback) {
-        mPCA.acquireTokenSilentAsync(mScopes, mPCA.getAccounts().get(0), callback);
+        // Get the authority from MSAL config
+        String authority = mPCA.getConfiguration().getDefaultAuthority().getAuthorityURL().toString();
+        mPCA.acquireTokenSilentAsync(mScopes, authority, callback);
     }
 
     public void signOut() {
-        for (IAccount account : mPCA.getAccounts()) {
-            mPCA.removeAccount(account);
-        }
+        mPCA.signOut(new ISingleAccountPublicClientApplication.SignOutCallback() {
+            @Override
+            public void onSignOut() {
+                Log.d("AUTHHELPER", "Signed out");
+            }
+
+            @Override
+            public void onError(@NonNull MsalException exception) {
+                Log.d("AUTHHELPER", "MSAL error signing out", exception);
+            }
+        });
     }
 }

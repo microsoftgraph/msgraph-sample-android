@@ -20,16 +20,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.microsoft.identity.client.BrowserTabActivity">
+        <!--Intent filter to capture authorization code response from the default browser on the
+            device calling back to the app after interactive sign in -->
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
-                    android:host="auth"
-                    android:scheme="@string/oauth_redirect_uri" />
+                    android:scheme="msauth"
+                    android:host="com.example.graphtutorial"
+                    android:path="/callback" />
             </intent-filter>
         </activity>
     </application>

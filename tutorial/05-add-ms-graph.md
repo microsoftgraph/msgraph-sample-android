@@ -59,7 +59,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
     import com.microsoft.graph.models.extensions.Event;
     import com.microsoft.graph.requests.extensions.IEventCollectionPage;
     import com.microsoft.identity.client.AuthenticationCallback;
-    import com.microsoft.identity.client.AuthenticationResult;
+    import com.microsoft.identity.client.IAuthenticationResult;
     import com.microsoft.identity.client.exception.MsalException;
     import java.util.List;
     ```
@@ -114,7 +114,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
     }
     ```
 
-1. Override the `onCreate` function in the `GraphHelper` class to get the user's events from Microsoft Graph.
+1. Override the `onCreate` function in the `CalendarFragment` class to get the user's events from Microsoft Graph.
 
     ```java
     @Override
@@ -128,7 +128,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
         AuthenticationHelper.getInstance()
                 .acquireTokenSilently(new AuthenticationCallback() {
                     @Override
-                    public void onSuccess(AuthenticationResult authenticationResult) {
+                    public void onSuccess(IAuthenticationResult authenticationResult) {
                         final GraphHelper graphHelper = GraphHelper.getInstance();
 
                         // Get the user's events
@@ -249,16 +249,14 @@ Now you can replace the JSON dump with something to display the results in a use
     package com.example.graphtutorial;
 
     import android.content.Context;
-    import android.support.annotation.NonNull;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
     import android.widget.ArrayAdapter;
     import android.widget.TextView;
-
+    import androidx.annotation.NonNull;
     import com.microsoft.graph.models.extensions.DateTimeTimeZone;
     import com.microsoft.graph.models.extensions.Event;
-
     import java.time.LocalDateTime;
     import java.time.ZoneId;
     import java.time.ZonedDateTime;

@@ -1,29 +1,34 @@
 package com.example.graphtutorial;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.graph.requests.extensions.IEventCollectionPage;
 import com.microsoft.identity.client.AuthenticationCallback;
-import com.microsoft.identity.client.AuthenticationResult;
+import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.exception.MsalException;
-
 import java.util.List;
 
 public class CalendarFragment extends Fragment {
+
     private List<Event> mEventList = null;
     private ProgressBar mProgress = null;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_calendar, container, false);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,7 +41,7 @@ public class CalendarFragment extends Fragment {
         AuthenticationHelper.getInstance()
                 .acquireTokenSilently(new AuthenticationCallback() {
                     @Override
-                    public void onSuccess(AuthenticationResult authenticationResult) {
+                    public void onSuccess(IAuthenticationResult authenticationResult) {
                         final GraphHelper graphHelper = GraphHelper.getInstance();
 
                         // Get the user's events
@@ -57,14 +62,7 @@ public class CalendarFragment extends Fragment {
                 });
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
-    }
-
     private void showProgressBar() {
-
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -78,20 +76,6 @@ public class CalendarFragment extends Fragment {
             @Override
             public void run() {
                 mProgress.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void addEventsToList() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ListView eventListView = getView().findViewById(R.id.eventlist);
-
-                EventListAdapter listAdapter = new EventListAdapter(getActivity(),
-                        R.layout.event_list_item, mEventList);
-
-                eventListView.setAdapter(listAdapter);
             }
         });
     }
@@ -118,4 +102,17 @@ public class CalendarFragment extends Fragment {
         };
     }
 
+    private void addEventsToList() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ListView eventListView = getView().findViewById(R.id.eventlist);
+
+                EventListAdapter listAdapter = new EventListAdapter(getActivity(),
+                        R.layout.event_list_item, mEventList);
+
+                eventListView.setAdapter(listAdapter);
+            }
+        });
+    }
 }

@@ -31,13 +31,14 @@ This module has been recorded and is available in the Office Development YouTube
 | Roles                | Author(s)                                               |
 | -------------------- | ------------------------------------------------------- |
 | Lab Manuals / Slides | Andrew Connell (Microsoft MVP, Voitanos) @andrewconnell |
-| Graph Java SDK Code  | vikyding (Microsoft) @vikyding                          |
+| Code                 | Jason Johnston (Microsoft) @jasonjohmsft                |
 | Sponsor / Support    | Yina Arenas (Microsoft) @yinaa                          |
 
 ## Version history
 
 | Version | Date               | Comments                                                                   |
 | ------- | ------------------ | -------------------------------------------------------------------------- |
+| 1.9     | November 13, 2019  | Recreated project with androidx artifacts and latest Android SDK, MSAL, Graph SDK |
 | 1.8     | June 18, 2019      | Updated readme to refreshed screencast recording                           |
 | 1.7     | March 30, 2019     | FY2019Q4 content refresh                                                   |
 | 1.6     | February 20, 2019  | Updated to docs.microsoft.com format                                       |
@@ -52,4 +53,5 @@ This module has been recorded and is available in the Office Development YouTube
 
 **THIS CODE IS PROVIDED _AS IS_ WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.**
 
+<!-- markdownlint-disable MD033 -->
 <img src="https://telemetry.sharepointpnp.com/msgraph-training-android" />

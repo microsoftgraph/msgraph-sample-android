@@ -10,7 +10,7 @@ This tutorial teaches you how to build an Android app that uses the Microsoft Gr
 Before you start this tutorial, you should have [Android Studio](https://developer.android.com/studio/) installed on your development machine.
 
 > [!NOTE]
-> This tutorial was written with Android Studio version 3.3.1 with the 1.8.0 JRE and the Android 9.0 SDK. The steps in this guide may work with other versions, but that has not been tested.
+> This tutorial was written with Android Studio version 3.5.1 and the Android 10.0 SDK. The steps in this guide may work with other versions, but that has not been tested.
 
 ## Watch the tutorial
 
