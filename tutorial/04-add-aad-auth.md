@@ -258,7 +258,7 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     ```
 
     > [!NOTE]
-    > Notice that the `signIn` method first checks if there is a user account already in the MSAL cache. If there is, it attempts to refresh its tokens silently, avoiding having to prompt the user every time they launch the app.
+    > Notice that the `signIn` method does a silent sign-in (via `doSilentSignIn`). The callback for this method will do an interactive sign-in if the silent one fails. This avoids having to prompt the user every time they launch the app.
 
 1. Save your changes and run the app.
 
@@ -396,7 +396,7 @@ In this section you will create a helper class to hold all of the calls to Micro
 
     ```java
     @Override
-    public void onSuccess(AuthenticationResult authenticationResult) {
+    public void onSuccess(IAuthenticationResult authenticationResult) {
         // Log the token for debug purposes
         String accessToken = authenticationResult.getAccessToken();
         Log.d("AUTH", String.format("Access token: %s", accessToken));
