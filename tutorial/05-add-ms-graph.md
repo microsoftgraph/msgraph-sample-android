@@ -45,7 +45,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
     > Consider what the code in `getEvents` is doing.
     >
     > - The URL that will be called is `/v1.0/me/events`.
-    > - The `select` function limits the fields returned for each events to just > those the view will actually use.
+    > - The `select` function limits the fields returned for each events to just those the view will actually use.
     > - The `QueryOption` named `orderby` is used to sort the results by the date and time they were created, with the most recent item being first.
 
 1. Add the following `import` statements to the top of the **CalendarFragment** file.
