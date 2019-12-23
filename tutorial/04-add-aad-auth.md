@@ -164,14 +164,14 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     import com.microsoft.identity.client.exception.MsalUiRequiredException;
     ```
 
-1. Add the following members property to the `MainActivity` class.
+1. Add the following member properties to the `MainActivity` class.
 
     ```java
     private AuthenticationHelper mAuthHelper = null;
     private boolean mAttemptInteractiveSignIn = false;
     ```
 
-1. Replace the `if (savedInstanceState == null) {...} else {...}` clause at the end of the `onCreate` with the following.
+1. Replace the `if (savedInstanceState == null) {...} else {...}` clause at the end of the `onCreate` function with the following.
 
     ```java
     // Get the authentication helper

@@ -252,9 +252,9 @@ In this section you will create icons for the app's navigation menu, create a me
     import com.google.android.material.navigation.NavigationView;
 
     public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-        private static final String SAVED_IS_SIGNED_IN = "isSignedIn"; //**
-        private static final String SAVED_USER_NAME = "userName"; //**
-        private static final String SAVED_USER_EMAIL = "userEmail"; //**
+        private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
+        private static final String SAVED_USER_NAME = "userName";
+        private static final String SAVED_USER_EMAIL = "userEmail";
 
         private DrawerLayout mDrawer;
         private NavigationView mNavigationView;
