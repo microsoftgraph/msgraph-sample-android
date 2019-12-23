@@ -114,14 +114,16 @@ In this section you will extend the `GraphHelper` class to add a function to get
     }
     ```
 
-1. Override the `onCreate` function in the `CalendarFragment` class to get the user's events from Microsoft Graph.
+1. Override the `onCreateView` function in the `CalendarFragment` class to get the user's events from Microsoft Graph.
 
     ```java
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
         mProgress = getActivity().findViewById(R.id.progressbar);
+        Log.d(TAG, "onCreate: mProgress = " + mProgress);
         showProgressBar();
 
         // Get a current access token
@@ -147,6 +149,8 @@ In this section you will extend the `GraphHelper` class to add a function to get
                         hideProgressBar();
                     }
                 });
+
+        return view;
     }
     ```
 
