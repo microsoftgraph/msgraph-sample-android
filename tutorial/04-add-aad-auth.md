@@ -52,6 +52,12 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     </activity>
     ```
 
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Change the **Kind** to **Interface**. Name the interface `IAuthenticationHelperCreatedListener` and select **OK**.
+
+1. Open the new file and replace its contents with the following.
+
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/IAuthenticationHelperCreatedListener.java" id="ListenerSnippet":::
+
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `AuthenticationHelper` and select **OK**.
 
 1. Open the new file and replace its contents with the following.
@@ -78,16 +84,17 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     private boolean mAttemptInteractiveSignIn = false;
     ```
 
-1. Replace the existing `if (savedInstanceState == null) {...} else {...}` clause at the end of the `onCreate` function with the following.
+1. Add the following code to the end of the `onCreate` function.
 
-    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="LoadStateSnippet" highlight="1-2,7,16-17":::
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="InitialLoginSnippet":::
 
 1. Add the following functions to the `MainActivity` class.
 
     ```java
     // Silently sign in - used if there is already a
     // user account in the MSAL cache
-    private void doSilentSignIn() {
+    private void doSilentSignIn(boolean shouldAttemptInteractive) {
+        mAttemptInteractiveSignIn = shouldAttemptInteractive;
         mAuthHelper.acquireTokenSilently(getAuthCallback());
     }
 
@@ -232,7 +239,6 @@ In this section you will create a helper class to hold all of the calls to Micro
     ```java
     import com.microsoft.graph.concurrency.ICallback;
     import com.microsoft.graph.core.ClientException;
-    import com.microsoft.graph.models.extensions.IGraphServiceClient;
     import com.microsoft.graph.models.extensions.User;
     ```
 

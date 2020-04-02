@@ -25,7 +25,6 @@ import com.microsoft.identity.client.exception.MsalUiRequiredException;
 
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.models.extensions.User;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,14 +67,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Listen for item select events on menu
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        // <LoadStateSnippet>
-        // Get the authentication helper
-        mAuthHelper = AuthenticationHelper.getInstance(getApplicationContext());
-
         // Load the home fragment by default on startup
         if (savedInstanceState == null) {
             openHomeFragment(mUserName);
-            doSilentSignIn();
+
         } else {
             // Restore state
             mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
@@ -84,9 +79,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setSignedInState(mIsSignedIn);
         }
 
-        // Enable interactive sign-in after initial load
-        mAttemptInteractiveSignIn = true;
-        // </LoadStateSnippet>
+        // <InitialLoginSnippet>
+        showProgressBar();
+        // Get the authentication helper
+        AuthenticationHelper.getInstance(getApplicationContext(),
+                new IAuthenticationHelperCreatedListener() {
+                    @Override
+                    public void onCreated(AuthenticationHelper authHelper) {
+                        mAuthHelper = authHelper;
+                        if (!mIsSignedIn) {
+                            doSilentSignIn(false);
+                        } else {
+                            hideProgressBar();
+                        }
+                    }
+
+                    @Override
+                    public void onError(MsalException exception) {
+                        Log.e("AUTH", "Error creating auth helper", exception);
+                    }
+                });
+        // </InitialLoginSnippet>
     }
 
     @Override
@@ -197,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Attempt silent sign in first
         // if this fails, the callback will handle doing
         // interactive sign in
-        doSilentSignIn();
+        doSilentSignIn(true);
     }
 
     private void signOut() {
@@ -210,7 +223,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Silently sign in - used if there is already a
     // user account in the MSAL cache
-    private void doSilentSignIn() {
+    private void doSilentSignIn(boolean shouldAttemptInteractive) {
+        mAttemptInteractiveSignIn = shouldAttemptInteractive;
         mAuthHelper.acquireTokenSilently(getAuthCallback());
     }
 
@@ -260,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Exception when communicating with the auth server, likely config issue
                     Log.e("AUTH", "Service error authenticating", exception);
                 }
+
                 hideProgressBar();
             }
 
