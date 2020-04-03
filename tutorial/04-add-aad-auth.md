@@ -14,7 +14,7 @@ In this exercise you will extend the application from the previous exercise to s
 
     :::code language="json" source="../demo/GraphTutorial/msal_config.json.example":::
 
-1. Replace `YOUR_APP_ID_HERE` with the app ID from your app registration, and replace `YOUR_PACKAGE_NAME_HERE` with your project's package name.
+1. Replace `YOUR_APP_ID_HERE` with the app ID from your app registration, and replace `com.example.graphtutorial` with your project's package name.
 
     > [!IMPORTANT]
     > If you're using source control such as git, now would be a good time to exclude the `msal_config.json` file from source control to avoid inadvertently leaking your app ID.
