@@ -164,17 +164,30 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     import com.microsoft.identity.client.exception.MsalUiRequiredException;
     ```
 
-1. Add the following member property to the `MainActivity` class.
+1. Add the following member properties to the `MainActivity` class.
 
     ```java
     private AuthenticationHelper mAuthHelper = null;
+    private boolean mAttemptInteractiveSignIn = false;
     ```
 
-1. Add the following to the end of the `onCreate` function.
+1. Replace the `if (savedInstanceState == null) {...} else {...}` clause at the end of the `onCreate` function with the following.
 
     ```java
     // Get the authentication helper
     mAuthHelper = AuthenticationHelper.getInstance(getApplicationContext());
+
+    if (savedInstanceState == null) {
+        // Load the home fragment by default on startup
+        openHomeFragment(mUserName);
+        doSilentSignIn();
+    } else {
+        mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
+        mUserName = savedInstanceState.getString(SAVED_USER_NAME);
+        mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+        setSignedInState(mIsSignedIn);
+    }
+    mAttemptInteractiveSignIn = true;
     ```
 
 1. Add the following functions to the `MainActivity` class.
@@ -211,12 +224,12 @@ In this section you will update the manifest to allow MSAL to use a browser to a
                 // Check the type of exception and handle appropriately
                 if (exception instanceof MsalUiRequiredException) {
                     Log.d("AUTH", "Interactive login required");
-                    doInteractiveSignIn();
+                    if (mAttemptInteractiveSignIn) { doInteractiveSignIn(); }
 
                 } else if (exception instanceof MsalClientException) {
                     if (exception.getErrorCode() == "no_current_account") {
                         Log.d("AUTH", "No current account, interactive login required");
-                        doInteractiveSignIn();
+                        if (mAttemptInteractiveSignIn) { doInteractiveSignIn(); }
                     } else {
                         // Exception inside MSAL, more info inside MsalError.java
                         Log.e("AUTH", "Client error authenticating", exception);

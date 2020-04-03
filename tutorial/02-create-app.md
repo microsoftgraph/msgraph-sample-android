@@ -252,6 +252,10 @@ In this section you will create icons for the app's navigation menu, create a me
     import com.google.android.material.navigation.NavigationView;
 
     public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+        private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
+        private static final String SAVED_USER_NAME = "userName";
+        private static final String SAVED_USER_EMAIL = "userEmail";
+
         private DrawerLayout mDrawer;
         private NavigationView mNavigationView;
         private View mHeaderView;
@@ -284,7 +288,27 @@ In this section you will create icons for the app's navigation menu, create a me
 
             // Listen for item select events on menu
             mNavigationView.setNavigationItemSelectedListener(this);
+
+            if (savedInstanceState == null) {
+                // Load the home fragment by default on startup
+                openHomeFragment(mUserName);
+            } else {
+                // Restore state
+                mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
+                mUserName = savedInstanceState.getString(SAVED_USER_NAME);
+                mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+                setSignedInState(mIsSignedIn);
+            }
         }
+
+        @Override
+        protected void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putBoolean(SAVED_IS_SIGNED_IN, mIsSignedIn);
+            outState.putString(SAVED_USER_NAME, mUserName);
+            outState.putString(SAVED_USER_EMAIL, mUserEmail);
+        }
+
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -557,15 +581,6 @@ In this section you will create fragments for the home and calendar views.
         mDrawer.closeDrawer(GravityCompat.START);
 
         return true;
-    }
-    ```
-
-1. Add the following at the end of the `onCreate` function to load the home fragment when the app starts.
-
-    ```java
-    // Load the home fragment by default on startup
-    if (savedInstanceState == null) {
-        openHomeFragment(mUserName);
     }
     ```
 
