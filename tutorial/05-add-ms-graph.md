@@ -32,7 +32,6 @@ In this section you will extend the `GraphHelper` class to add a function to get
     ```java
     import android.util.Log;
     import android.widget.ListView;
-    import android.widget.ProgressBar;
     import com.microsoft.graph.concurrency.ICallback;
     import com.microsoft.graph.core.ClientException;
     import com.microsoft.graph.models.extensions.Event;

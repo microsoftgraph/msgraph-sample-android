@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 package com.example.graphtutorial;
 
 import com.microsoft.graph.authentication.IAuthenticationProvider;
