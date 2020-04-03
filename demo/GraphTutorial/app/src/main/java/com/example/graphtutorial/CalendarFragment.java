@@ -115,7 +115,7 @@ public class CalendarFragment extends Fragment {
                 addEventsToList();
                 hideProgressBar();
             }
-            // <SuccessSnippet>
+            // </SuccessSnippet>
 
             @Override
             public void failure(ClientException ex) {
