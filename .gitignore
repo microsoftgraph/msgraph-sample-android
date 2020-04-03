@@ -84,6 +84,8 @@ lint/tmp/
 
 *.old/
 .vscode/
+.project
+.settings/
 
 msal_config.json
 
