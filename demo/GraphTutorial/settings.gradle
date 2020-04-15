@@ -1,0 +1,2 @@
+rootProject.name='Graph Tutorial'
+include ':app'

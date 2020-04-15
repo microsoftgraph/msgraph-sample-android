@@ -12,28 +12,12 @@ In this exercise you will extend the application from the previous exercise to s
 
 1. Add the following to the **msal_config.json** file.
 
-    ```json
-    {
-      "client_id" : "YOUR_APP_ID_HERE",
-      "redirect_uri" : "msauth://YOUR_PACKAGE_NAME_HERE/callback",
-      "broker_redirect_uri_registered": false,
-      "account_mode": "SINGLE",
-      "authorities" : [
-        {
-          "type": "AAD",
-          "audience": {
-            "type": "AzureADandPersonalMicrosoftAccount"
-          },
-          "default": true
-        }
-      ]
-    }
-    ```
+    :::code language="json" source="../demo/GraphTutorial/msal_config.json.example":::
 
-    Replace `YOUR_APP_ID_HERE` with the app ID from your app registration, and replace `YOUR_PACKAGE_NAME_HERE` with your project's package name.
+1. Replace `YOUR_APP_ID_HERE` with the app ID from your app registration, and replace `com.example.graphtutorial` with your project's package name.
 
-> [!IMPORTANT]
-> If you're using source control such as git, now would be a good time to exclude the `msal_config.json` file from source control to avoid inadvertently leaking your app ID.
+    > [!IMPORTANT]
+    > If you're using source control such as git, now would be a good time to exclude the `msal_config.json` file from source control to avoid inadvertently leaking your app ID.
 
 ## Implement sign-in
 
@@ -68,88 +52,17 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     </activity>
     ```
 
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Change the **Kind** to **Interface**. Name the interface `IAuthenticationHelperCreatedListener` and select **OK**.
+
+1. Open the new file and replace its contents with the following.
+
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/IAuthenticationHelperCreatedListener.java" id="ListenerSnippet":::
+
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `AuthenticationHelper` and select **OK**.
 
 1. Open the new file and replace its contents with the following.
 
-    ```java
-    package com.example.graphtutorial;
-
-    import android.app.Activity;
-    import android.content.Context;
-    import android.util.Log;
-    import com.microsoft.identity.client.AuthenticationCallback;
-    import com.microsoft.identity.client.IPublicClientApplication;
-    import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
-    import com.microsoft.identity.client.PublicClientApplication;
-    import com.microsoft.identity.client.exception.MsalException;
-
-    // Singleton class - the app only needs a single instance
-    // of PublicClientApplication
-    public class AuthenticationHelper {
-        private static AuthenticationHelper INSTANCE = null;
-        private ISingleAccountPublicClientApplication mPCA = null;
-        private String[] mScopes = { "User.Read", "Calendars.Read" };
-
-        private AuthenticationHelper(Context ctx) {
-            PublicClientApplication.createSingleAccountPublicClientApplication(ctx, R.raw.msal_config,
-                new IPublicClientApplication.ISingleAccountApplicationCreatedListener() {
-                    @Override
-                    public void onCreated(ISingleAccountPublicClientApplication application) {
-                        mPCA = application;
-                    }
-
-                    @Override
-                    public void onError(MsalException exception) {
-                        Log.e("AUTHHELPER", "Error creating MSAL application", exception);
-                    }
-                });
-        }
-
-        public static synchronized AuthenticationHelper getInstance(Context ctx) {
-            if (INSTANCE == null) {
-                INSTANCE = new AuthenticationHelper(ctx);
-            }
-
-            return INSTANCE;
-        }
-
-        // Version called from fragments. Does not create an
-        // instance if one doesn't exist
-        public static synchronized AuthenticationHelper getInstance() {
-            if (INSTANCE == null) {
-                throw new IllegalStateException(
-                    "AuthenticationHelper has not been initialized from MainActivity");
-            }
-
-            return INSTANCE;
-        }
-
-        public void acquireTokenInteractively(Activity activity, AuthenticationCallback callback) {
-            mPCA.signIn(activity, null, mScopes, callback);
-        }
-
-        public void acquireTokenSilently(AuthenticationCallback callback) {
-            // Get the authority from MSAL config
-            String authority = mPCA.getConfiguration().getDefaultAuthority().getAuthorityURL().toString();
-            mPCA.acquireTokenSilentAsync(mScopes, authority, callback);
-        }
-
-        public void signOut() {
-            mPCA.signOut(new ISingleAccountPublicClientApplication.SignOutCallback() {
-                @Override
-                public void onSignOut() {
-                    Log.d("AUTHHELPER", "Signed out");
-                }
-
-                @Override
-                public void onError(@NonNull MsalException exception) {
-                    Log.d("AUTHHELPER", "MSAL error signing out", exception);
-                }
-            });
-        }
-    }
-    ```
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/AuthenticationHelper.java" id="AuthHelperSnippet":::
 
 1. Open **MainActivity** and add the following `import` statements.
 
@@ -171,31 +84,17 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     private boolean mAttemptInteractiveSignIn = false;
     ```
 
-1. Replace the `if (savedInstanceState == null) {...} else {...}` clause at the end of the `onCreate` function with the following.
+1. Add the following code to the end of the `onCreate` function.
 
-    ```java
-    // Get the authentication helper
-    mAuthHelper = AuthenticationHelper.getInstance(getApplicationContext());
-
-    if (savedInstanceState == null) {
-        // Load the home fragment by default on startup
-        openHomeFragment(mUserName);
-        doSilentSignIn();
-    } else {
-        mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
-        mUserName = savedInstanceState.getString(SAVED_USER_NAME);
-        mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
-        setSignedInState(mIsSignedIn);
-    }
-    mAttemptInteractiveSignIn = true;
-    ```
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="InitialLoginSnippet":::
 
 1. Add the following functions to the `MainActivity` class.
 
     ```java
     // Silently sign in - used if there is already a
     // user account in the MSAL cache
-    private void doSilentSignIn() {
+    private void doSilentSignIn(boolean shouldAttemptInteractive) {
+        mAttemptInteractiveSignIn = shouldAttemptInteractive;
         mAuthHelper.acquireTokenSilently(getAuthCallback());
     }
 
@@ -213,6 +112,7 @@ In this section you will update the manifest to allow MSAL to use a browser to a
                 // Log the token for debug purposes
                 String accessToken = authenticationResult.getAccessToken();
                 Log.d("AUTH", String.format("Access token: %s", accessToken));
+
                 hideProgressBar();
 
                 setSignedInState(true);
@@ -224,12 +124,16 @@ In this section you will update the manifest to allow MSAL to use a browser to a
                 // Check the type of exception and handle appropriately
                 if (exception instanceof MsalUiRequiredException) {
                     Log.d("AUTH", "Interactive login required");
-                    if (mAttemptInteractiveSignIn) { doInteractiveSignIn(); }
-
+                    if (mAttemptInteractiveSignIn) {
+                        doInteractiveSignIn();
+                    }
                 } else if (exception instanceof MsalClientException) {
-                    if (exception.getErrorCode() == "no_current_account") {
+                    if (exception.getErrorCode() == "no_current_account" ||
+                        exception.getErrorCode() == "no_account_found") {
                         Log.d("AUTH", "No current account, interactive login required");
-                        if (mAttemptInteractiveSignIn) { doInteractiveSignIn(); }
+                        if (mAttemptInteractiveSignIn) {
+                            doInteractiveSignIn();
+                        }
                     } else {
                         // Exception inside MSAL, more info inside MsalError.java
                         Log.e("AUTH", "Client error authenticating", exception);
@@ -253,22 +157,7 @@ In this section you will update the manifest to allow MSAL to use a browser to a
 
 1. Replace the existing `signIn` and `signOut` functions with the following.
 
-    ```java
-    private void signIn() {
-        showProgressBar();
-        // Attempt silent sign in first
-        // if this fails, the callback will handle doing
-        // interactive sign in
-        doSilentSignIn();
-    }
-
-    private void signOut() {
-        mAuthHelper.signOut();
-
-        setSignedInState(false);
-        openHomeFragment(mUserName);
-    }
-    ```
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="SignInAndOutSnippet":::
 
     > [!NOTE]
     > Notice that the `signIn` method does a silent sign-in (via `doSilentSignIn`). The callback for this method will do an interactive sign-in if the silent one fails. This avoids having to prompt the user every time they launch the app.
@@ -349,53 +238,12 @@ In this section you will create a helper class to hold all of the calls to Micro
     ```java
     import com.microsoft.graph.concurrency.ICallback;
     import com.microsoft.graph.core.ClientException;
-    import com.microsoft.graph.models.extensions.IGraphServiceClient;
     import com.microsoft.graph.models.extensions.User;
     ```
 
 1. Add the following function to the `MainActivity` class to generate an `ICallback` for the Graph call.
 
-    ```java
-    private ICallback<User> getUserCallback() {
-        return new ICallback<User>() {
-            @Override
-            public void success(User user) {
-                Log.d("AUTH", "User: " + user.displayName);
-
-                mUserName = user.displayName;
-                mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
-
-                        setSignedInState(true);
-                        openHomeFragment(mUserName);
-                    }
-                });
-
-            }
-
-            @Override
-            public void failure(ClientException ex) {
-                Log.e("AUTH", "Error getting /me", ex);
-                mUserName = "ERROR";
-                mUserEmail = "ERROR";
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
-
-                        setSignedInState(true);
-                        openHomeFragment(mUserName);
-                    }
-                });
-            }
-        };
-    }
-    ```
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="GetUserCallbackSnippet":::
 
 1. Remove the following lines that set the user name and email:
 
@@ -407,17 +255,6 @@ In this section you will create a helper class to hold all of the calls to Micro
 
 1. Replace the `onSuccess` override in the `AuthenticationCallback` with the following.
 
-    ```java
-    @Override
-    public void onSuccess(IAuthenticationResult authenticationResult) {
-        // Log the token for debug purposes
-        String accessToken = authenticationResult.getAccessToken();
-        Log.d("AUTH", String.format("Access token: %s", accessToken));
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="OnSuccessSnippet":::
 
-        // Get Graph client and get user
-        GraphHelper graphHelper = GraphHelper.getInstance();
-        graphHelper.getUser(accessToken, getUserCallback());
-    }
-    ```
-
-If you save your changes and run the app now, after sign-in the UI is updated with the user's display name and email address.
+1. Save your changes and run the app. After sign-in the UI is updated with the user's display name and email address.
