@@ -171,6 +171,17 @@ In this section you will create icons for the app's navigation menu, create a me
 
             // Listen for item select events on menu
             mNavigationView.setNavigationItemSelectedListener(this);
+
+            if (savedInstanceState == null) {
+                // Load the home fragment by default on startup
+                openHomeFragment(mUserName);
+            } else {
+                // Restore state
+                mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
+                mUserName = savedInstanceState.getString(SAVED_USER_NAME);
+                mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+                setSignedInState(mIsSignedIn);
+            }
         }
 
         @Override

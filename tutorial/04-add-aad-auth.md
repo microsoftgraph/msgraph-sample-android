@@ -127,7 +127,6 @@ In this section you will update the manifest to allow MSAL to use a browser to a
                     if (mAttemptInteractiveSignIn) {
                         doInteractiveSignIn();
                     }
-
                 } else if (exception instanceof MsalClientException) {
                     if (exception.getErrorCode() == "no_current_account" ||
                         exception.getErrorCode() == "no_account_found") {
