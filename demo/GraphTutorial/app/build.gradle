@@ -36,8 +36,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     // <DependenciesSnippet>
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'com.microsoft.identity.client:msal:1.4.0'
-    implementation 'com.microsoft.graph:microsoft-graph:1.7.1'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.microsoft.identity.client:msal:2.0.5'
+    implementation 'com.microsoft.graph:microsoft-graph:2.5.0'
     // </DependenciesSnippet>
 }

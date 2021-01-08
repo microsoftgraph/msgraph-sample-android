@@ -23,17 +23,25 @@ Before moving on, install some additional dependencies that you will use later.
 - [Microsoft Authentication Library (MSAL) for Android](https://github.com/AzureAD/microsoft-authentication-library-for-android) to handle Azure AD authentication and token management.
 - [Microsoft Graph SDK for Java](https://github.com/microsoftgraph/msgraph-sdk-java) for making calls to the Microsoft Graph.
 
-1. Expand **Gradle Scripts**, then open the **build.gradle (Module: app)** file.
+1. Expand **Gradle Scripts**, then open **build.gradle (Module: Graph_Tutorial.app)**.
 
 1. Add the following lines inside the `dependencies` value.
 
     :::code language="gradle" source="../demo/GraphTutorial/app/build.gradle" id="DependenciesSnippet":::
 
-1. Add a `packagingOptions` value inside the `android` value in the **build.gradle (Module: app)** file.
+1. Add a `packagingOptions` value inside the `android` value in **build.gradle (Module: Graph_Tutorial.app)**.
 
     ```Gradle
     packagingOptions {
         pickFirst 'META-INF/jersey-module-version'
+    }
+    ```
+
+1. Add the Azure Maven repository for the MicrosoftDeviceSDK library, a dependency of MSAL. Open **build.gradle (Project: Graph_Tutorial)**. Add the following to the `repositories` value inside the `allprojects` value.
+
+    ```Gradle
+    maven {
+        url 'https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1'
     }
     ```
 

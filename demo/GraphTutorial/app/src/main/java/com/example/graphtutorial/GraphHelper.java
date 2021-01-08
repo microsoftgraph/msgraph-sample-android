@@ -18,6 +18,10 @@ import java.util.List;
 
 // Singleton class - the app only needs a single instance
 // of the Graph client
+// Add suppression here because IAuthenticationProvider
+// has been marked deprecated, but is still the type expected
+// by the GraphServiceClient
+@SuppressWarnings( "deprecation" )
 public class GraphHelper implements IAuthenticationProvider {
     private static GraphHelper INSTANCE = null;
     private IGraphServiceClient mClient = null;
