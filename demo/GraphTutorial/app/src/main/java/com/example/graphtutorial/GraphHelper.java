@@ -3,7 +3,6 @@
 
 package com.example.graphtutorial;
 
-import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.http.IHttpRequest;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
@@ -22,7 +21,7 @@ import java.util.List;
 // has been marked deprecated, but is still the type expected
 // by the GraphServiceClient
 @SuppressWarnings( "deprecation" )
-public class GraphHelper implements IAuthenticationProvider {
+public class GraphHelper implements com.microsoft.graph.authentication.IAuthenticationProvider {
     private static GraphHelper INSTANCE = null;
     private IGraphServiceClient mClient = null;
     private String mAccessToken = null;

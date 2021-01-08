@@ -69,9 +69,10 @@ In this section you will create icons for the app's navigation menu, create a me
 
 1. Select **Next**, then **Finish**.
 
-1. Repeat the previous step to create three more icons.
+1. Repeat the previous step to create four more icons.
 
     - Name: `ic_menu_calendar`, Icon: `event`
+    - Name: `ic_menu_add_event`, Icon: `add box`
     - Name: `ic_menu_signout`, Icon: `exit to app`
     - Name: `ic_menu_signin`, Icon: `person add`
 
@@ -246,6 +247,7 @@ In this section you will create icons for the app's navigation menu, create a me
             } else {
                 menu.removeItem(R.id.nav_home);
                 menu.removeItem(R.id.nav_calendar);
+                menu.removeItem(R.id.nav_create_event);
                 menu.removeItem(R.id.nav_signout);
             }
 
@@ -305,9 +307,31 @@ In this section you will create fragments for the home and calendar views.
     </RelativeLayout>
     ```
 
+1. Right-click the **app/res/layout** folder and select **New**, then **Layout resource file**.
+
+1. Name the file `fragment_new_event` and change the **Root element** to `RelativeLayout`, then select **OK**.
+
+1. Open the **fragment_new_event.xml** file and replace its contents with the following.
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="New Event"
+            android:textSize="30sp" />
+
+    </RelativeLayout>
+    ```
+
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `HomeFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
+1. Name the class `HomeFragment`, then select **OK**.
 
 1. Open the **HomeFragment** file and replace its contents with the following.
 
@@ -315,7 +339,7 @@ In this section you will create fragments for the home and calendar views.
 
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `CalendarFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
+1. Name the class `CalendarFragment`, then select **OK**.
 
 1. Open the **CalendarFragment** file and replace its contents with the following.
 
@@ -340,6 +364,33 @@ In this section you will create fragments for the home and calendar views.
     }
     ```
 
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
+
+1. Name the class `NewEventFragment`, then select **OK**.
+
+1. Open the **NewEventFragment** file and replace its contents with the following.
+
+    ```java
+    package com.example.graphtutorial;
+
+    import android.os.Bundle;
+    import android.view.LayoutInflater;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.fragment.app.Fragment;
+
+    public class NewEventFragment extends Fragment {
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_new_event, container, false);
+        }
+    }
+    ```
+
 1. Open the **MainActivity.java** file and add the the following functions to the class.
 
     ```java
@@ -358,6 +409,14 @@ In this section you will create fragments for the home and calendar views.
                 .replace(R.id.fragment_container, new CalendarFragment())
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
+    }
+
+    // Load the "New Event" fragment
+    private void openNewEventFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new NewEventFragment())
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
 
     private void signIn() {

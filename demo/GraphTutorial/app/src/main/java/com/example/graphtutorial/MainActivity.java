@@ -124,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_calendar:
                 openCalendarFragment();
                 break;
+            case R.id.nav_create_event:
+                openNewEventFragment();
+                break;
             case R.id.nav_signin:
                 signIn();
                 break;
@@ -178,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             menu.removeItem(R.id.nav_home);
             menu.removeItem(R.id.nav_calendar);
+            menu.removeItem(R.id.nav_create_event);
             menu.removeItem(R.id.nav_signout);
         }
 
@@ -212,6 +216,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .replace(R.id.fragment_container, new CalendarFragment())
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
+    }
+
+    // Load the "New Event" fragment
+    private void openNewEventFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new NewEventFragment())
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
 
     // <SignInAndOutSnippet>
