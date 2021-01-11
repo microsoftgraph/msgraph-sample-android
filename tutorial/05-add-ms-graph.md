@@ -60,18 +60,11 @@ In this section you will extend the `GraphHelper` class to add a function to get
     import java.util.List;
     ```
 
-1. Add the following members to the `CalendarFragment` class.
+1. Add the following member to the `CalendarFragment` class.
 
     ```java
-    private static final String TIME_ZONE = "timeZone";
-
-    private String mTimeZone;
     private List<Event> mEventList = null;
     ```
-
-1. Add the following methods to the `CalendarFragment` class to allow the fragment to receive the user's time zone as a parameter.
-
-    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/CalendarFragment.java" id="CreateInstanceSnippet":::
 
 1. Add the following functions to the `CalendarFragment` class to hide and show the progress bar.
 

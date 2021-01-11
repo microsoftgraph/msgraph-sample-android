@@ -147,6 +147,7 @@ In this section you will create icons for the app's navigation menu, create a me
         private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
         private static final String SAVED_USER_NAME = "userName";
         private static final String SAVED_USER_EMAIL = "userEmail";
+        private static final String SAVED_USER_TIMEZONE = "userTimeZone";
 
         private DrawerLayout mDrawer;
         private NavigationView mNavigationView;
@@ -190,6 +191,7 @@ In this section you will create icons for the app's navigation menu, create a me
                 mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
                 mUserName = savedInstanceState.getString(SAVED_USER_NAME);
                 mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+                mUserTimeZone = savedInstanceState.getString(SAVED_USER_TIMEZONE);
                 setSignedInState(mIsSignedIn);
             }
         }
@@ -200,6 +202,7 @@ In this section you will create icons for the app's navigation menu, create a me
             outState.putBoolean(SAVED_IS_SIGNED_IN, mIsSignedIn);
             outState.putString(SAVED_USER_NAME, mUserName);
             outState.putString(SAVED_USER_EMAIL, mUserEmail);
+            outState.putString(SAVED_USER_TIMEZONE, mUserTimeZone);
         }
 
         @Override
@@ -260,6 +263,7 @@ In this section you will create icons for the app's navigation menu, create a me
                 // For testing
                 mUserName = "Megan Bowen";
                 mUserEmail = "meganb@contoso.com";
+                mUserTimeZone = "Pacific Standard Time";
 
                 userName.setText(mUserName);
                 userEmail.setText(mUserEmail);
@@ -357,6 +361,29 @@ In this section you will create fragments for the home and calendar views.
     import androidx.fragment.app.Fragment;
 
     public class CalendarFragment extends Fragment {
+        private static final String TIME_ZONE = "timeZone";
+
+        private String mTimeZone;
+
+        public CalendarFragment() {}
+
+        public static CalendarFragment createInstance(String timeZone) {
+            CalendarFragment fragment = new CalendarFragment();
+
+            // Add the provided time zone to the fragment's arguments
+            Bundle args = new Bundle();
+            args.putString(TIME_ZONE, timeZone);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                mTimeZone = getArguments().getString(TIME_ZONE);
+            }
+        }
 
         @Nullable
         @Override
@@ -384,6 +411,29 @@ In this section you will create fragments for the home and calendar views.
     import androidx.fragment.app.Fragment;
 
     public class NewEventFragment extends Fragment {
+        private static final String TIME_ZONE = "timeZone";
+
+        private String mTimeZone;
+
+        public NewEventFragment() {}
+
+        public static NewEventFragment createInstance(String timeZone) {
+            NewEventFragment fragment = new NewEventFragment();
+
+            // Add the provided time zone to the fragment's arguments
+            Bundle args = new Bundle();
+            args.putString(TIME_ZONE, timeZone);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                mTimeZone = getArguments().getString(TIME_ZONE);
+            }
+        }
 
         @Nullable
         @Override
@@ -406,17 +456,19 @@ In this section you will create fragments for the home and calendar views.
     }
 
     // Load the "Calendar" fragment
-    private void openCalendarFragment() {
+    private void openCalendarFragment(String timeZone) {
+        CalendarFragment fragment = CalendarFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new CalendarFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
     }
 
     // Load the "New Event" fragment
-    private void openNewEventFragment() {
+    private void openNewEventFragment(String timeZone) {
+        NewEventFragment fragment = NewEventFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new NewEventFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
@@ -435,21 +487,6 @@ In this section you will create fragments for the home and calendar views.
 1. Replace the existing `onNavigationItemSelected` function with the following.
 
     :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="OnNavItemSelectedSnippet":::
-
-1. Add the following at the end of the `onCreate` function to load the home fragment when the app starts.
-
-    ```java
-    // Load the home fragment by default on startup
-    if (savedInstanceState == null) {
-        openHomeFragment(mUserName);
-    } else {
-        // Restore state
-        mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
-        mUserName = savedInstanceState.getString(SAVED_USER_NAME);
-        mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
-        setSignedInState(mIsSignedIn);
-    }
-    ```
 
 1. Save all of your changes.
 

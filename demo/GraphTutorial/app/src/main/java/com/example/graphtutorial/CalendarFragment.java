@@ -33,7 +33,6 @@ public class CalendarFragment extends Fragment {
     private String mTimeZone;
     private List<Event> mEventList = null;
 
-    // <CreateInstanceSnippet>
     public CalendarFragment() {}
 
     public static CalendarFragment createInstance(String timeZone) {
@@ -53,7 +52,6 @@ public class CalendarFragment extends Fragment {
             mTimeZone = getArguments().getString(TIME_ZONE);
         }
     }
-    // </CreateInstanceSnippet>
 
     // <OnCreateViewSnippet>
     @Nullable

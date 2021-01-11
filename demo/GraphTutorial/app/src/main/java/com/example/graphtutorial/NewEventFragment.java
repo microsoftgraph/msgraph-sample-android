@@ -12,6 +12,29 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class NewEventFragment extends Fragment {
+    private static final String TIME_ZONE = "timeZone";
+
+    private String mTimeZone;
+
+    public NewEventFragment() {}
+
+    public static NewEventFragment createInstance(String timeZone) {
+        NewEventFragment fragment = new NewEventFragment();
+
+        // Add the provided time zone to the fragment's arguments
+        Bundle args = new Bundle();
+        args.putString(TIME_ZONE, timeZone);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mTimeZone = getArguments().getString(TIME_ZONE);
+        }
+    }
 
     @Nullable
     @Override

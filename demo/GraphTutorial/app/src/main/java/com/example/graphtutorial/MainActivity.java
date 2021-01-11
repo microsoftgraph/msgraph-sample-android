@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
     private static final String SAVED_USER_NAME = "userName";
     private static final String SAVED_USER_EMAIL = "userEmail";
+    private static final String SAVED_USER_TIMEZONE = "userTimeZone";
 
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
             mUserName = savedInstanceState.getString(SAVED_USER_NAME);
             mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+            mUserTimeZone = savedInstanceState.getString(SAVED_USER_TIMEZONE);
             setSignedInState(mIsSignedIn);
         }
 
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putBoolean(SAVED_IS_SIGNED_IN, mIsSignedIn);
         outState.putString(SAVED_USER_NAME, mUserName);
         outState.putString(SAVED_USER_EMAIL, mUserEmail);
+        outState.putString(SAVED_USER_TIMEZONE, mUserTimeZone);
     }
 
     // <OnNavItemSelectedSnippet>
@@ -126,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openCalendarFragment(mUserTimeZone);
                 break;
             case R.id.nav_create_event:
-                openNewEventFragment();
+                openNewEventFragment(mUserTimeZone);
                 break;
             case R.id.nav_signin:
                 signIn();
@@ -222,9 +225,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Load the "New Event" fragment
-    private void openNewEventFragment() {
+    private void openNewEventFragment(String timeZone) {
+        NewEventFragment fragment = NewEventFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new NewEventFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
