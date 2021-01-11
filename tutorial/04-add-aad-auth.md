@@ -174,9 +174,7 @@ Once the app resumes, you should see an access token printed in the debug log in
 
 In this section you will create a helper class to hold all of the calls to Microsoft Graph and update the `MainActivity` class to use this new class to get the logged-in user.
 
-1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
-
-1. Name the class `GraphHelper` and select **OK**.
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `GraphHelper` and select **OK**.
 
 1. Open the new file and replace its contents with the following.
 
@@ -222,7 +220,9 @@ In this section you will create a helper class to hold all of the calls to Micro
             mAccessToken = accessToken;
 
             // GET /me (logged in user)
-            mClient.me().buildRequest().get(callback);
+            mClient.me().buildRequest()
+                    .select("displayName,mail,mailboxSettings,userPrincipalName")
+                    .get(callback);
         }
     }
     ```

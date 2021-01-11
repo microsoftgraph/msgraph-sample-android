@@ -154,6 +154,7 @@ In this section you will create icons for the app's navigation menu, create a me
         private boolean mIsSignedIn = false;
         private String mUserName = null;
         private String mUserEmail = null;
+        private String mUserTimeZone = null;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -265,6 +266,7 @@ In this section you will create icons for the app's navigation menu, create a me
             } else {
                 mUserName = null;
                 mUserEmail = null;
+                mUserTimeZone = null;
 
                 userName.setText("Please sign in");
                 userEmail.setText("");

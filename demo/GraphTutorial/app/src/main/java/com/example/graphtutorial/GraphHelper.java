@@ -4,16 +4,22 @@
 package com.example.graphtutorial;
 
 import com.microsoft.graph.concurrency.ICallback;
+import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.http.IHttpRequest;
+import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.models.extensions.User;
 import com.microsoft.graph.options.Option;
+import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.QueryOption;
 import com.microsoft.graph.requests.extensions.IEventCollectionPage;
+import com.microsoft.graph.requests.extensions.IEventCollectionRequestBuilder;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 // Singleton class - the app only needs a single instance
 // of the Graph client
@@ -51,23 +57,61 @@ public class GraphHelper implements com.microsoft.graph.authentication.IAuthenti
         mAccessToken = accessToken;
 
         // GET /me (logged in user)
-        mClient.me().buildRequest().get(callback);
+        mClient.me().buildRequest()
+                .select("displayName,mail,mailboxSettings,userPrincipalName")
+                .get(callback);
     }
 
     // <GetEventsSnippet>
-    public void getEvents(String accessToken, ICallback<IEventCollectionPage> callback) {
+    public void getCalendarView(String accessToken,
+                                ZonedDateTime viewStart,
+                                ZonedDateTime viewEnd,
+                                String timeZone,
+                                final ICallback<List<Event>> callback) {
         mAccessToken = accessToken;
 
-        // Use query options to sort by created time
         final List<Option> options = new LinkedList<Option>();
-        options.add(new QueryOption("orderby", "createdDateTime DESC"));
+        options.add(new QueryOption("startDateTime", viewStart.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        options.add(new QueryOption("endDateTime", viewEnd.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
 
+        // Start and end times adjusted to user's time zone
+        options.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timeZone + "\""));
 
-        // GET /me/events
-        mClient.me().events().buildRequest(options)
+        final List<Event> allEvents = new LinkedList<Event>();
+        // Create a separate list of options for the paging requests
+        // paging request should not include the query parameters from the initial
+        // request, but should include the headers.
+        final List<Option> pagingOptions = new LinkedList<Option>();
+        pagingOptions.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timeZone + "\""));
+
+        final ICallback<IEventCollectionPage> pagingCallback = new ICallback<IEventCollectionPage>() {
+            @Override
+            public void success(IEventCollectionPage eventCollectionPage) {
+                allEvents.addAll(eventCollectionPage.getCurrentPage());
+
+                IEventCollectionRequestBuilder nextPage =
+                        eventCollectionPage.getNextPage();
+
+                if (nextPage == null) {
+                    callback.success(allEvents);
+                }
+                else{
+                    nextPage.buildRequest(pagingOptions)
+                            .get(this);
+                }
+            }
+
+            @Override
+            public void failure(ClientException ex) {
+                callback.failure(ex);
+            }
+        };
+
+        mClient.me().calendarView().buildRequest(options)
                 .select("subject,organizer,start,end")
-                .get(callback);
-
+                .orderBy("start/dateTime")
+                .top(25)
+                .get(pagingCallback);
     }
 
     // Debug function to get the JSON representation of a Graph

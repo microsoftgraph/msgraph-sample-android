@@ -16,16 +16,44 @@ import androidx.fragment.app.Fragment;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.models.extensions.Event;
-import com.microsoft.graph.requests.extensions.IEventCollectionPage;
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.exception.MsalException;
 
+import java.time.DayOfWeek;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 public class CalendarFragment extends Fragment {
+    private static final String TIME_ZONE = "timeZone";
 
+    private String mTimeZone;
     private List<Event> mEventList = null;
+
+    // <CreateInstanceSnippet>
+    public CalendarFragment() {}
+
+    public static CalendarFragment createInstance(String timeZone) {
+        CalendarFragment fragment = new CalendarFragment();
+
+        // Add the provided time zone to the fragment's arguments
+        Bundle args = new Bundle();
+        args.putString(TIME_ZONE, timeZone);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mTimeZone = getArguments().getString(TIME_ZONE);
+        }
+    }
+    // </CreateInstanceSnippet>
 
     // <OnCreateViewSnippet>
     @Nullable
@@ -42,9 +70,23 @@ public class CalendarFragment extends Fragment {
                     public void onSuccess(IAuthenticationResult authenticationResult) {
                         final GraphHelper graphHelper = GraphHelper.getInstance();
 
+                        ZoneId tzId = GraphToIana.getZoneIdFromWindows(mTimeZone);
+                        // Get midnight of the first day of the week (assumed Sunday)
+                        // in the user's timezone, then convert to UTC
+                        ZonedDateTime startOfWeek = ZonedDateTime.now(tzId)
+                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                                .truncatedTo(ChronoUnit.DAYS)
+                                .withZoneSameInstant(ZoneId.of("UTC"));
+
+                        // Add 7 days to get the end of the week
+                        ZonedDateTime endOfWeek = startOfWeek.plusDays(7);
+
                         // Get the user's events
-                        graphHelper.getEvents(authenticationResult.getAccessToken(),
-                                getEventsCallback());
+                        graphHelper.getCalendarView(authenticationResult.getAccessToken(),
+                                startOfWeek,
+                                endOfWeek,
+                                mTimeZone,
+                                getCalendarViewCallback());
                     }
 
                     @Override
@@ -105,12 +147,12 @@ public class CalendarFragment extends Fragment {
     }
     // </AddEventsToListSnippet>
 
-    private ICallback<IEventCollectionPage> getEventsCallback() {
-        return new ICallback<IEventCollectionPage>() {
+    private ICallback<List<Event>> getCalendarViewCallback() {
+        return new ICallback<List<Event>>() {
             // <SuccessSnippet>
             @Override
-            public void success(IEventCollectionPage iEventCollectionPage) {
-                mEventList = iEventCollectionPage.getCurrentPage();
+            public void success(List<Event> eventList) {
+                mEventList = eventList;
 
                 addEventsToList();
                 hideProgressBar();

@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean mIsSignedIn = false;
     private String mUserName = null;
     private String mUserEmail = null;
+    private String mUserTimeZone = null;
     private AuthenticationHelper mAuthHelper = null;
     private boolean mAttemptInteractiveSignIn = false;
 
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openHomeFragment(mUserName);
                 break;
             case R.id.nav_calendar:
-                openCalendarFragment();
+                openCalendarFragment(mUserTimeZone);
                 break;
             case R.id.nav_create_event:
                 openNewEventFragment();
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             mUserName = null;
             mUserEmail = null;
+            mUserTimeZone = null;
 
             userName.setText("Please sign in");
             userEmail.setText("");
@@ -211,9 +213,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Load the "Calendar" fragment
-    private void openCalendarFragment() {
+    private void openCalendarFragment(String timeZone) {
+        CalendarFragment fragment = CalendarFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new CalendarFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
     }
@@ -318,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 mUserName = user.displayName;
                 mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
+                mUserTimeZone = user.mailboxSettings.timeZone;
 
                 runOnUiThread(new Runnable() {
                     @Override
