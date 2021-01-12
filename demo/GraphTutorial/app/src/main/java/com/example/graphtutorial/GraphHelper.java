@@ -6,9 +6,15 @@ package com.example.graphtutorial;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.http.IHttpRequest;
+import com.microsoft.graph.models.extensions.Attendee;
+import com.microsoft.graph.models.extensions.DateTimeTimeZone;
+import com.microsoft.graph.models.extensions.EmailAddress;
 import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
+import com.microsoft.graph.models.extensions.ItemBody;
 import com.microsoft.graph.models.extensions.User;
+import com.microsoft.graph.models.generated.AttendeeType;
+import com.microsoft.graph.models.generated.BodyType;
 import com.microsoft.graph.options.Option;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.QueryOption;
@@ -120,4 +126,66 @@ public class GraphHelper implements com.microsoft.graph.authentication.IAuthenti
         return mClient.getSerializer().serializeObject(object);
     }
     // </GetEventsSnippet>
+
+    // <CreateEventSnippet>
+    public void createEvent(String accessToken,
+                            String subject,
+                            ZonedDateTime start,
+                            ZonedDateTime end,
+                            String timeZone,
+                            String[] attendees,
+                            String body,
+                            final ICallback<Event> callback) {
+        Event newEvent = new Event();
+
+        // Set properties on the event
+        // Subject
+        newEvent.subject = subject;
+
+        // Start
+        newEvent.start = new DateTimeTimeZone();
+        // DateTimeTimeZone has two parts:
+        // The date/time expressed as an ISO 8601 Local date/time
+        // Local meaning there is no UTC or UTC offset designation
+        // Example: 2020-01-12T09:00:00
+        newEvent.start.dateTime = start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        // The time zone - can be either a Windows time zone name ("Pacific Standard Time")
+        // or an IANA time zone identifier ("America/Los_Angeles")
+        newEvent.start.timeZone = timeZone;
+
+        // End
+        newEvent.end = new DateTimeTimeZone();
+        newEvent.end.dateTime = end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        newEvent.end.timeZone = timeZone;
+
+        // Add attendees if any were provided
+        if (attendees.length > 0) {
+            newEvent.attendees = new LinkedList<>();
+
+            for (String attendeeEmail : attendees) {
+                Attendee newAttendee = new Attendee();
+                // Set the attendee type, in this case required
+                newAttendee.type = AttendeeType.REQUIRED;
+                // Create a new EmailAddress object with the address
+                // provided
+                newAttendee.emailAddress = new EmailAddress();
+                newAttendee.emailAddress.address = attendeeEmail;
+
+                newEvent.attendees.add(newAttendee);
+            }
+        }
+
+        // Add body if provided
+        if (!body.isEmpty()) {
+            newEvent.body = new ItemBody();
+            // Set the content
+            newEvent.body.content = body;
+            // Specify content is plain text
+            newEvent.body.contentType = BodyType.TEXT;
+        }
+
+        mClient.me().events().buildRequest()
+                .post(newEvent, callback);
+    }
+    // </CreateEventSnippet>
 }

@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.models.extensions.Event;
@@ -159,8 +161,11 @@ public class CalendarFragment extends Fragment {
 
             @Override
             public void failure(ClientException ex) {
-                Log.e("GRAPH", "Error getting events", ex);
                 hideProgressBar();
+                Log.e("GRAPH", "Error getting events", ex);
+                Snackbar.make(getView(),
+                    ex.getMessage(),
+                    BaseTransientBottomBar.LENGTH_LONG).show();
             }
         };
     }

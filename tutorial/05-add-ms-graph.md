@@ -6,7 +6,7 @@ In this exercise you will incorporate the Microsoft Graph into the application. 
 
 In this section you will extend the `GraphHelper` class to add a function to get the user's events for the current week and update `CalendarFragment` to use these new functions.
 
-1. Open the **GraphHelper** file and add the following `import` statements to the top of the file.
+1. Open **GraphHelper** and add the following `import` statements to the top of the file.
 
     ```java
     import com.microsoft.graph.options.Option;
@@ -46,6 +46,8 @@ In this section you will extend the `GraphHelper` class to add a function to get
     ```java
     import android.util.Log;
     import android.widget.ListView;
+    import com.google.android.material.snackbar.BaseTransientBottomBar;
+    import com.google.android.material.snackbar.Snackbar;
     import com.microsoft.graph.concurrency.ICallback;
     import com.microsoft.graph.core.ClientException;
     import com.microsoft.graph.models.extensions.Event;
@@ -88,8 +90,11 @@ In this section you will extend the `GraphHelper` class to add a function to get
 
             @Override
             public void failure(ClientException ex) {
-                Log.e("GRAPH", "Error getting events", ex);
                 hideProgressBar();
+                Log.e("GRAPH", "Error getting events", ex);
+                Snackbar.make(getView(),
+                    ex.getMessage(),
+                    BaseTransientBottomBar.LENGTH_LONG).show();
             }
         };
     }
