@@ -261,8 +261,8 @@ In this section you will create icons for the app's navigation menu, create a me
 
             if (isSignedIn) {
                 // For testing
-                mUserName = "Megan Bowen";
-                mUserEmail = "meganb@contoso.com";
+                mUserName = "Lynne Robbins";
+                mUserEmail = "lynner@contoso.com";
                 mUserTimeZone = "Pacific Standard Time";
 
                 userName.setText(mUserName);
