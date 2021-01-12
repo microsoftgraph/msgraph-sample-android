@@ -66,3 +66,5 @@ In this section you will add the ability to create events on the user's calendar
     :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/NewEventFragment.java" id="OnCreateViewSnippet":::
 
 1. Save your changes and restart the app. Select the **New Event** menu item, fill in the form, and select **CREATE**.
+
+    ![A screenshot of the create event form in the app](images/create-event.png)
