@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
     private static final String SAVED_USER_NAME = "userName";
     private static final String SAVED_USER_EMAIL = "userEmail";
+    private static final String SAVED_USER_TIMEZONE = "userTimeZone";
 
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean mIsSignedIn = false;
     private String mUserName = null;
     private String mUserEmail = null;
+    private String mUserTimeZone = null;
     private AuthenticationHelper mAuthHelper = null;
     private boolean mAttemptInteractiveSignIn = false;
 
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
             mUserName = savedInstanceState.getString(SAVED_USER_NAME);
             mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+            mUserTimeZone = savedInstanceState.getString(SAVED_USER_TIMEZONE);
             setSignedInState(mIsSignedIn);
         }
 
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putBoolean(SAVED_IS_SIGNED_IN, mIsSignedIn);
         outState.putString(SAVED_USER_NAME, mUserName);
         outState.putString(SAVED_USER_EMAIL, mUserEmail);
+        outState.putString(SAVED_USER_TIMEZONE, mUserTimeZone);
     }
 
     // <OnNavItemSelectedSnippet>
@@ -122,7 +126,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openHomeFragment(mUserName);
                 break;
             case R.id.nav_calendar:
-                openCalendarFragment();
+                openCalendarFragment(mUserTimeZone);
+                break;
+            case R.id.nav_create_event:
+                openNewEventFragment(mUserTimeZone);
                 break;
             case R.id.nav_signin:
                 signIn();
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             menu.removeItem(R.id.nav_home);
             menu.removeItem(R.id.nav_calendar);
+            menu.removeItem(R.id.nav_create_event);
             menu.removeItem(R.id.nav_signout);
         }
 
@@ -191,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             mUserName = null;
             mUserEmail = null;
+            mUserTimeZone = null;
 
             userName.setText("Please sign in");
             userEmail.setText("");
@@ -207,11 +216,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Load the "Calendar" fragment
-    private void openCalendarFragment() {
+    private void openCalendarFragment(String timeZone) {
+        CalendarFragment fragment = CalendarFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new CalendarFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
+    }
+
+    // Load the "New Event" fragment
+    private void openNewEventFragment(String timeZone) {
+        NewEventFragment fragment = NewEventFragment.createInstance(timeZone);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
 
     // <SignInAndOutSnippet>
@@ -306,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 mUserName = user.displayName;
                 mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
+                mUserTimeZone = user.mailboxSettings.timeZone;
 
                 runOnUiThread(new Runnable() {
                     @Override

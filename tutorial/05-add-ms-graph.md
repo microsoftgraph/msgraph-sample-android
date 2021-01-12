@@ -4,14 +4,18 @@ In this exercise you will incorporate the Microsoft Graph into the application. 
 
 ## Get calendar events from Outlook
 
-In this section you will extend the `GraphHelper` class to add a function to get the user's events and update `CalendarFragment` to use these new functions.
+In this section you will extend the `GraphHelper` class to add a function to get the user's events for the current week and update `CalendarFragment` to use these new functions.
 
-1. Open the **GraphHelper** file and add the following `import` statements to the top of the file.
+1. Open **GraphHelper** and add the following `import` statements to the top of the file.
 
     ```java
     import com.microsoft.graph.options.Option;
+    import com.microsoft.graph.options.HeaderOption;
     import com.microsoft.graph.options.QueryOption;
     import com.microsoft.graph.requests.extensions.IEventCollectionPage;
+    import com.microsoft.graph.requests.extensions.IEventCollectionRequestBuilder;
+    import java.time.ZonedDateTime;
+    import java.time.format.DateTimeFormatter;
     import java.util.LinkedList;
     import java.util.List;
     ```
@@ -21,24 +25,40 @@ In this section you will extend the `GraphHelper` class to add a function to get
     :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/GraphHelper.java" id="GetEventsSnippet":::
 
     > [!NOTE]
-    > Consider what the code in `getEvents` is doing.
+    > Consider what the code in `getCalendarView` is doing.
     >
-    > - The URL that will be called is `/v1.0/me/events`.
-    > - The `select` function limits the fields returned for each events to just those the view will actually use.
-    > - The `QueryOption` named `orderby` is used to sort the results by the date and time they were created, with the most recent item being first.
+    > - The URL that will be called is `/v1.0/me/calendarview`.
+    >   - The `startDateTime` and `endDateTime` query parameters define the start and end of the calendar view.
+    >   - the `Prefer: outlook.timezone` header causes the Microsoft Graph to return the start and end times of each event in the user's time zone.
+    >   - The `select` function limits the fields returned for each events to just those the view will actually use.
+    >   - The `orderby` function sorts the results by start time.
+    >   - The `top` function requests 25 results per page.
+    > - A callback is defined (`pagingCallback`) to check if there are more results available and to request additional pages if needed.
+
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**. Name the class `GraphToIana` and select **OK**.
+
+1. Open the new file and replace its contents with the following.
+
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/GraphToIana.java" id="GraphToIanaSnippet":::
 
 1. Add the following `import` statements to the top of the **CalendarFragment** file.
 
     ```java
     import android.util.Log;
     import android.widget.ListView;
+    import com.google.android.material.snackbar.BaseTransientBottomBar;
+    import com.google.android.material.snackbar.Snackbar;
     import com.microsoft.graph.concurrency.ICallback;
     import com.microsoft.graph.core.ClientException;
     import com.microsoft.graph.models.extensions.Event;
-    import com.microsoft.graph.requests.extensions.IEventCollectionPage;
     import com.microsoft.identity.client.AuthenticationCallback;
     import com.microsoft.identity.client.IAuthenticationResult;
     import com.microsoft.identity.client.exception.MsalException;
+    import java.time.DayOfWeek;
+    import java.time.ZoneId;
+    import java.time.ZonedDateTime;
+    import java.time.temporal.ChronoUnit;
+    import java.time.temporal.TemporalAdjusters;
     import java.util.List;
     ```
 
@@ -52,14 +72,14 @@ In this section you will extend the `GraphHelper` class to add a function to get
 
     :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/CalendarFragment.java" id="ProgressBarSnippet":::
 
-1. Add the following function to provide a callback for the `getEvents` function in `GraphHelper`.
+1. Add the following function to provide a callback for the `getCalendarView` function in `GraphHelper`.
 
     ```java
-    private ICallback<IEventCollectionPage> getEventsCallback() {
-        return new ICallback<IEventCollectionPage>() {
+    private ICallback<List<Event>> getCalendarViewCallback() {
+        return new ICallback<List<Event>>() {
             @Override
-            public void success(IEventCollectionPage iEventCollectionPage) {
-                mEventList = iEventCollectionPage.getCurrentPage();
+            public void success(List<Event> eventList) {
+                mEventList = eventList;
 
                 // Temporary for debugging
                 String jsonEvents = GraphHelper.getInstance().serializeObject(mEventList);
@@ -70,8 +90,11 @@ In this section you will extend the `GraphHelper` class to add a function to get
 
             @Override
             public void failure(ClientException ex) {
-                Log.e("GRAPH", "Error getting events", ex);
                 hideProgressBar();
+                Log.e("GRAPH", "Error getting events", ex);
+                Snackbar.make(getView(),
+                    ex.getMessage(),
+                    BaseTransientBottomBar.LENGTH_LONG).show();
             }
         };
     }
@@ -83,7 +106,7 @@ In this section you will extend the `GraphHelper` class to add a function to get
 
     Notice what this code does. First, it calls `acquireTokenSilently` to get the access token. Calling this method every time an access token is needed is a best practice because it takes advantage of MSAL's caching and token refresh abilities. Internally, MSAL checks for a cached token, then checks if it is expired. If the token is present and not expired, it just returns the cached token. If it is expired, it attempts to refresh the token before returning it.
 
-    Once the token is retrieved, the code then calls the `getEvents` method to get the user's events.
+    Once the token is retrieved, the code then calls the `getCalendarView` method to get the user's events.
 
 1. Run the app, sign in, and tap the **Calendar** navigation item in the menu. You should see a JSON dump of the events in the debug log in Android Studio.
 

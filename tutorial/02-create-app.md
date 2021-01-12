@@ -23,17 +23,25 @@ Before moving on, install some additional dependencies that you will use later.
 - [Microsoft Authentication Library (MSAL) for Android](https://github.com/AzureAD/microsoft-authentication-library-for-android) to handle Azure AD authentication and token management.
 - [Microsoft Graph SDK for Java](https://github.com/microsoftgraph/msgraph-sdk-java) for making calls to the Microsoft Graph.
 
-1. Expand **Gradle Scripts**, then open the **build.gradle (Module: app)** file.
+1. Expand **Gradle Scripts**, then open **build.gradle (Module: Graph_Tutorial.app)**.
 
 1. Add the following lines inside the `dependencies` value.
 
     :::code language="gradle" source="../demo/GraphTutorial/app/build.gradle" id="DependenciesSnippet":::
 
-1. Add a `packagingOptions` value inside the `android` value in the **build.gradle (Module: app)** file.
+1. Add a `packagingOptions` value inside the `android` value in **build.gradle (Module: Graph_Tutorial.app)**.
 
     ```Gradle
     packagingOptions {
         pickFirst 'META-INF/jersey-module-version'
+    }
+    ```
+
+1. Add the Azure Maven repository for the MicrosoftDeviceSDK library, a dependency of MSAL. Open **build.gradle (Project: Graph_Tutorial)**. Add the following to the `repositories` value inside the `allprojects` value.
+
+    ```Gradle
+    maven {
+        url 'https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1'
     }
     ```
 
@@ -61,9 +69,10 @@ In this section you will create icons for the app's navigation menu, create a me
 
 1. Select **Next**, then **Finish**.
 
-1. Repeat the previous step to create three more icons.
+1. Repeat the previous step to create four more icons.
 
     - Name: `ic_menu_calendar`, Icon: `event`
+    - Name: `ic_menu_add_event`, Icon: `add box`
     - Name: `ic_menu_signout`, Icon: `exit to app`
     - Name: `ic_menu_signin`, Icon: `person add`
 
@@ -138,6 +147,7 @@ In this section you will create icons for the app's navigation menu, create a me
         private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
         private static final String SAVED_USER_NAME = "userName";
         private static final String SAVED_USER_EMAIL = "userEmail";
+        private static final String SAVED_USER_TIMEZONE = "userTimeZone";
 
         private DrawerLayout mDrawer;
         private NavigationView mNavigationView;
@@ -145,6 +155,7 @@ In this section you will create icons for the app's navigation menu, create a me
         private boolean mIsSignedIn = false;
         private String mUserName = null;
         private String mUserEmail = null;
+        private String mUserTimeZone = null;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +191,7 @@ In this section you will create icons for the app's navigation menu, create a me
                 mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
                 mUserName = savedInstanceState.getString(SAVED_USER_NAME);
                 mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
+                mUserTimeZone = savedInstanceState.getString(SAVED_USER_TIMEZONE);
                 setSignedInState(mIsSignedIn);
             }
         }
@@ -190,6 +202,7 @@ In this section you will create icons for the app's navigation menu, create a me
             outState.putBoolean(SAVED_IS_SIGNED_IN, mIsSignedIn);
             outState.putString(SAVED_USER_NAME, mUserName);
             outState.putString(SAVED_USER_EMAIL, mUserEmail);
+            outState.putString(SAVED_USER_TIMEZONE, mUserTimeZone);
         }
 
         @Override
@@ -238,6 +251,7 @@ In this section you will create icons for the app's navigation menu, create a me
             } else {
                 menu.removeItem(R.id.nav_home);
                 menu.removeItem(R.id.nav_calendar);
+                menu.removeItem(R.id.nav_create_event);
                 menu.removeItem(R.id.nav_signout);
             }
 
@@ -247,14 +261,16 @@ In this section you will create icons for the app's navigation menu, create a me
 
             if (isSignedIn) {
                 // For testing
-                mUserName = "Megan Bowen";
-                mUserEmail = "meganb@contoso.com";
+                mUserName = "Lynne Robbins";
+                mUserEmail = "lynner@contoso.com";
+                mUserTimeZone = "Pacific Standard Time";
 
                 userName.setText(mUserName);
                 userEmail.setText(mUserEmail);
             } else {
                 mUserName = null;
                 mUserEmail = null;
+                mUserTimeZone = null;
 
                 userName.setText("Please sign in");
                 userEmail.setText("");
@@ -297,9 +313,31 @@ In this section you will create fragments for the home and calendar views.
     </RelativeLayout>
     ```
 
+1. Right-click the **app/res/layout** folder and select **New**, then **Layout resource file**.
+
+1. Name the file `fragment_new_event` and change the **Root element** to `RelativeLayout`, then select **OK**.
+
+1. Open the **fragment_new_event.xml** file and replace its contents with the following.
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="New Event"
+            android:textSize="30sp" />
+
+    </RelativeLayout>
+    ```
+
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `HomeFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
+1. Name the class `HomeFragment`, then select **OK**.
 
 1. Open the **HomeFragment** file and replace its contents with the following.
 
@@ -307,7 +345,7 @@ In this section you will create fragments for the home and calendar views.
 
 1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
 
-1. Name the class `CalendarFragment` and set the **Superclass** to `androidx.fragment.app.Fragment`, then select **OK**.
+1. Name the class `CalendarFragment`, then select **OK**.
 
 1. Open the **CalendarFragment** file and replace its contents with the following.
 
@@ -323,11 +361,84 @@ In this section you will create fragments for the home and calendar views.
     import androidx.fragment.app.Fragment;
 
     public class CalendarFragment extends Fragment {
+        private static final String TIME_ZONE = "timeZone";
+
+        private String mTimeZone;
+
+        public CalendarFragment() {}
+
+        public static CalendarFragment createInstance(String timeZone) {
+            CalendarFragment fragment = new CalendarFragment();
+
+            // Add the provided time zone to the fragment's arguments
+            Bundle args = new Bundle();
+            args.putString(TIME_ZONE, timeZone);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                mTimeZone = getArguments().getString(TIME_ZONE);
+            }
+        }
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             return inflater.inflate(R.layout.fragment_calendar, container, false);
+        }
+    }
+    ```
+
+1. Right-click the **app/java/com.example.graphtutorial** folder and select **New**, then **Java Class**.
+
+1. Name the class `NewEventFragment`, then select **OK**.
+
+1. Open the **NewEventFragment** file and replace its contents with the following.
+
+    ```java
+    package com.example.graphtutorial;
+
+    import android.os.Bundle;
+    import android.view.LayoutInflater;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.fragment.app.Fragment;
+
+    public class NewEventFragment extends Fragment {
+        private static final String TIME_ZONE = "timeZone";
+
+        private String mTimeZone;
+
+        public NewEventFragment() {}
+
+        public static NewEventFragment createInstance(String timeZone) {
+            NewEventFragment fragment = new NewEventFragment();
+
+            // Add the provided time zone to the fragment's arguments
+            Bundle args = new Bundle();
+            args.putString(TIME_ZONE, timeZone);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                mTimeZone = getArguments().getString(TIME_ZONE);
+            }
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_new_event, container, false);
         }
     }
     ```
@@ -345,11 +456,21 @@ In this section you will create fragments for the home and calendar views.
     }
 
     // Load the "Calendar" fragment
-    private void openCalendarFragment() {
+    private void openCalendarFragment(String timeZone) {
+        CalendarFragment fragment = CalendarFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new CalendarFragment())
+                .replace(R.id.fragment_container, fragment)
                 .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
+    }
+
+    // Load the "New Event" fragment
+    private void openNewEventFragment(String timeZone) {
+        NewEventFragment fragment = NewEventFragment.createInstance(timeZone);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+        mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
 
     private void signIn() {
@@ -366,21 +487,6 @@ In this section you will create fragments for the home and calendar views.
 1. Replace the existing `onNavigationItemSelected` function with the following.
 
     :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="OnNavItemSelectedSnippet":::
-
-1. Add the following at the end of the `onCreate` function to load the home fragment when the app starts.
-
-    ```java
-    // Load the home fragment by default on startup
-    if (savedInstanceState == null) {
-        openHomeFragment(mUserName);
-    } else {
-        // Restore state
-        mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
-        mUserName = savedInstanceState.getString(SAVED_USER_NAME);
-        mUserEmail = savedInstanceState.getString(SAVED_USER_EMAIL);
-        setSignedInState(mIsSignedIn);
-    }
-    ```
 
 1. Save all of your changes.
 

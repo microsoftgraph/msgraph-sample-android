@@ -24,7 +24,6 @@ import java.util.TimeZone;
 public class EventListAdapter extends ArrayAdapter<Event> {
     private Context mContext;
     private int mResource;
-    private ZoneId mLocalTimeZoneId;
 
     // Used for the ViewHolder pattern
     // https://developer.android.com/training/improving-layouts/smooth-scrolling
@@ -39,7 +38,6 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         super(context, resource, events);
         mContext = context;
         mResource = resource;
-        mLocalTimeZoneId = TimeZone.getDefault().toZoneId();
     }
 
     @NonNull
@@ -76,8 +74,7 @@ public class EventListAdapter extends ArrayAdapter<Event> {
     // a LocalDateTime, then return a formatted string
     private String getLocalDateTimeString(DateTimeTimeZone dateTime) {
         ZonedDateTime localDateTime = LocalDateTime.parse(dateTime.dateTime)
-                .atZone(ZoneId.of(dateTime.timeZone))
-                .withZoneSameInstant(mLocalTimeZoneId);
+                .atZone(GraphToIana.getZoneIdFromWindows(dateTime.timeZone));
 
         return String.format("%s %s",
                 localDateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),

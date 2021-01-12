@@ -21,7 +21,7 @@ import com.microsoft.identity.client.exception.MsalException;
 public class AuthenticationHelper {
     private static AuthenticationHelper INSTANCE = null;
     private ISingleAccountPublicClientApplication mPCA = null;
-    private String[] mScopes = { "User.Read", "Calendars.Read" };
+    private String[] mScopes = { "User.Read", "MailboxSettings.Read", "Calendars.ReadWrite" };
 
     private AuthenticationHelper(Context ctx, final IAuthenticationHelperCreatedListener listener) {
         PublicClientApplication.createSingleAccountPublicClientApplication(ctx, R.raw.msal_config,
