@@ -249,8 +249,8 @@ In this section you will create a helper class to hold all of the calls to Micro
 
     ```java
     // For testing
-    mUserName = "Megan Bowen";
-    mUserEmail = "meganb@contoso.com";
+    mUserName = "Lynne Robbins";
+    mUserEmail = "lynner@contoso.com";
     ```
 
 1. Replace the `onSuccess` override in the `AuthenticationCallback` with the following.
