@@ -25,9 +25,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
+            app:titleTextColor="?colorOnPrimary"
             android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            android:theme="@style/Theme.GraphTutorial" />
 
         <FrameLayout
             android:id="@+id/fragment_container"

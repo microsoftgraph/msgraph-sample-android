@@ -69,19 +69,16 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     ```java
     import android.util.Log;
 
-    import com.microsoft.identity.client.AuthenticationCallback;
     import com.microsoft.identity.client.IAuthenticationResult;
     import com.microsoft.identity.client.exception.MsalClientException;
-    import com.microsoft.identity.client.exception.MsalException;
     import com.microsoft.identity.client.exception.MsalServiceException;
     import com.microsoft.identity.client.exception.MsalUiRequiredException;
     ```
 
-1. Add the following member properties to the `MainActivity` class.
+1. Add the following member property to the `MainActivity` class.
 
     ```java
     private AuthenticationHelper mAuthHelper = null;
-    private boolean mAttemptInteractiveSignIn = false;
     ```
 
 1. Add the following code to the end of the `onCreate` function.
@@ -94,64 +91,66 @@ In this section you will update the manifest to allow MSAL to use a browser to a
     // Silently sign in - used if there is already a
     // user account in the MSAL cache
     private void doSilentSignIn(boolean shouldAttemptInteractive) {
-        mAttemptInteractiveSignIn = shouldAttemptInteractive;
-        mAuthHelper.acquireTokenSilently(getAuthCallback());
+        mAuthHelper.acquireTokenSilently()
+            .thenAccept(authenticationResult -> {
+                handleSignInSuccess(authenticationResult);
+            })
+            .exceptionally(exception -> {
+                // Check the type of exception and handle appropriately
+                Throwable cause = exception.getCause();
+                if (cause instanceof MsalUiRequiredException) {
+                    Log.d("AUTH", "Interactive login required");
+                    if (shouldAttemptInteractive) doInteractiveSignIn();
+                } else if (cause instanceof MsalClientException) {
+                    MsalClientException clientException = (MsalClientException)cause;
+                    if (clientException.getErrorCode() == "no_current_account" ||
+                        clientException.getErrorCode() == "no_account_found") {
+                        Log.d("AUTH", "No current account, interactive login required");
+                        if (shouldAttemptInteractive) doInteractiveSignIn();
+                    }
+                } else {
+                    handleSignInFailure(cause);
+                }
+                hideProgressBar();
+                return null;
+            });
     }
 
     // Prompt the user to sign in
     private void doInteractiveSignIn() {
-        mAuthHelper.acquireTokenInteractively(this, getAuthCallback());
+        mAuthHelper.acquireTokenInteractively(this)
+            .thenAccept(authenticationResult -> {
+                handleSignInSuccess(authenticationResult);
+            })
+            .exceptionally(exception -> {
+                handleSignInFailure(exception);
+                hideProgressBar();
+                return null;
+            });
     }
 
     // Handles the authentication result
-    public AuthenticationCallback getAuthCallback() {
-        return new AuthenticationCallback() {
+    private void handleSignInSuccess(IAuthenticationResult authenticationResult) {
+        // Log the token for debug purposes
+        String accessToken = authenticationResult.getAccessToken();
+        Log.d("AUTH", String.format("Access token: %s", accessToken));
 
-            @Override
-            public void onSuccess(IAuthenticationResult authenticationResult) {
-                // Log the token for debug purposes
-                String accessToken = authenticationResult.getAccessToken();
-                Log.d("AUTH", String.format("Access token: %s", accessToken));
+        hideProgressBar();
 
-                hideProgressBar();
+        setSignedInState(true);
+        openHomeFragment(mUserName);
+    }
 
-                setSignedInState(true);
-                openHomeFragment(mUserName);
-            }
-
-            @Override
-            public void onError(MsalException exception) {
-                // Check the type of exception and handle appropriately
-                if (exception instanceof MsalUiRequiredException) {
-                    Log.d("AUTH", "Interactive login required");
-                    if (mAttemptInteractiveSignIn) {
-                        doInteractiveSignIn();
-                    }
-                } else if (exception instanceof MsalClientException) {
-                    if (exception.getErrorCode() == "no_current_account" ||
-                        exception.getErrorCode() == "no_account_found") {
-                        Log.d("AUTH", "No current account, interactive login required");
-                        if (mAttemptInteractiveSignIn) {
-                            doInteractiveSignIn();
-                        }
-                    } else {
-                        // Exception inside MSAL, more info inside MsalError.java
-                        Log.e("AUTH", "Client error authenticating", exception);
-                    }
-                } else if (exception instanceof MsalServiceException) {
-                    // Exception when communicating with the auth server, likely config issue
-                    Log.e("AUTH", "Service error authenticating", exception);
-                }
-                hideProgressBar();
-            }
-
-            @Override
-            public void onCancel() {
-                // User canceled the authentication
-                Log.d("AUTH", "Authentication canceled");
-                hideProgressBar();
-            }
-        };
+    private void handleSignInFailure(Throwable exception) {
+        if (exception instanceof MsalServiceException) {
+            // Exception when communicating with the auth server, likely config issue
+            Log.e("AUTH", "Service error authenticating", exception);
+        } else if (exception instanceof MsalClientException) {
+            // Exception inside MSAL, more info inside MsalError.java
+            Log.e("AUTH", "Client error authenticating", exception);
+        } else {
+            Log.e("AUTH", "Unhandled exception authenticating", exception);
+        }
     }
     ```
 
@@ -181,23 +180,22 @@ In this section you will create a helper class to hold all of the calls to Micro
     ```java
     package com.example.graphtutorial;
 
-    import com.microsoft.graph.authentication.IAuthenticationProvider;
-    import com.microsoft.graph.concurrency.ICallback;
-    import com.microsoft.graph.http.IHttpRequest;
-    import com.microsoft.graph.models.extensions.IGraphServiceClient;
     import com.microsoft.graph.models.extensions.User;
-    import com.microsoft.graph.requests.extensions.GraphServiceClient;
+    import com.microsoft.graph.requests.GraphServiceClient;
+
+    import java.util.concurrent.CompletableFuture;
 
     // Singleton class - the app only needs a single instance
     // of the Graph client
     public class GraphHelper implements IAuthenticationProvider {
         private static GraphHelper INSTANCE = null;
-        private IGraphServiceClient mClient = null;
-        private String mAccessToken = null;
+        private GraphServiceClient mClient = null;
 
         private GraphHelper() {
+            AuthenticationHelper authProvider = AuthenticationHelper.getInstance();
+
             mClient = GraphServiceClient.builder()
-                    .authenticationProvider(this).buildClient();
+                .authenticationProvider(authProvider).buildClient();
         }
 
         public static synchronized GraphHelper getInstance() {
@@ -208,42 +206,20 @@ In this section you will create a helper class to hold all of the calls to Micro
             return INSTANCE;
         }
 
-        // Part of the Graph IAuthenticationProvider interface
-        // This method is called before sending the HTTP request
-        @Override
-        public void authenticateRequest(IHttpRequest request) {
-            // Add the access token in the Authorization header
-            request.addHeader("Authorization", "Bearer " + mAccessToken);
-        }
-
-        public void getUser(String accessToken, ICallback<User> callback) {
-            mAccessToken = accessToken;
-
+        public CompletableFuture<User> getUser() {
             // GET /me (logged in user)
-            mClient.me().buildRequest()
-                    .select("displayName,mail,mailboxSettings,userPrincipalName")
-                    .get(callback);
-        }
+            return mClient.me().buildRequest()
+                .select("displayName,mail,mailboxSettings,userPrincipalName")
+                .getAsync();
+    }
     }
     ```
 
     > [!NOTE]
     > Consider what this code does.
     >
-    > - It implements the `IAuthenticationProvider` interface to insert the access token in the `Authorization` header on outgoing HTTP requests.
     > - It exposes a `getUser` function to get the logged-in user's information from the `/me` Graph endpoint.
-
-1. Add the following `import` statements to the top of the **MainActivity** file.
-
-    ```java
-    import com.microsoft.graph.concurrency.ICallback;
-    import com.microsoft.graph.core.ClientException;
-    import com.microsoft.graph.models.extensions.User;
-    ```
-
-1. Add the following function to the `MainActivity` class to generate an `ICallback` for the Graph call.
-
-    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="GetUserCallbackSnippet":::
+    >   - It uses `.select` to request only the properties of the user that the application needs.
 
 1. Remove the following lines that set the user name and email:
 
@@ -251,10 +227,11 @@ In this section you will create a helper class to hold all of the calls to Micro
     // For testing
     mUserName = "Lynne Robbins";
     mUserEmail = "lynner@contoso.com";
+    mUserTimeZone = "Pacific Standard Time";
     ```
 
-1. Replace the `onSuccess` override in the `AuthenticationCallback` with the following.
+1. Replace the existing `handleSignInSuccess` function with the following.
 
-    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="OnSuccessSnippet":::
+    :::code language="java" source="../demo/GraphTutorial/app/src/main/java/com/example/graphtutorial/MainActivity.java" id="HandleSignInSuccessSnippet":::
 
 1. Save your changes and run the app. After sign-in the UI is updated with the user's display name and email address.

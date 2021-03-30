@@ -19,16 +19,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
-import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.exception.MsalClientException;
-import com.microsoft.identity.client.exception.MsalException;
 import com.microsoft.identity.client.exception.MsalServiceException;
 import com.microsoft.identity.client.exception.MsalUiRequiredException;
-
-import com.microsoft.graph.concurrency.ICallback;
-import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.models.extensions.User;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String SAVED_IS_SIGNED_IN = "isSignedIn";
@@ -43,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String mUserName = null;
     private String mUserEmail = null;
     private String mUserTimeZone = null;
+
     private AuthenticationHelper mAuthHelper = null;
-    private boolean mAttemptInteractiveSignIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Add the hamburger menu icon
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -72,10 +66,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Listen for item select events on menu
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        // Load the home fragment by default on startup
         if (savedInstanceState == null) {
+            // Load the home fragment by default on startup
             openHomeFragment(mUserName);
-
         } else {
             // Restore state
             mIsSignedIn = savedInstanceState.getBoolean(SAVED_IS_SIGNED_IN);
@@ -88,23 +81,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // <InitialLoginSnippet>
         showProgressBar();
         // Get the authentication helper
-        AuthenticationHelper.getInstance(getApplicationContext(),
-                new IAuthenticationHelperCreatedListener() {
-                    @Override
-                    public void onCreated(AuthenticationHelper authHelper) {
-                        mAuthHelper = authHelper;
-                        if (!mIsSignedIn) {
-                            doSilentSignIn(false);
-                        } else {
-                            hideProgressBar();
-                        }
-                    }
-
-                    @Override
-                    public void onError(MsalException exception) {
-                        Log.e("AUTH", "Error creating auth helper", exception);
-                    }
-                });
+        AuthenticationHelper.getInstance(getApplicationContext())
+            .thenAccept(authHelper -> {
+                mAuthHelper = authHelper;
+                if (!mIsSignedIn) {
+                    doSilentSignIn(false);
+                } else {
+                    hideProgressBar();
+                }
+            })
+            .exceptionally(exception -> {
+                Log.e("AUTH", "Error creating auth helper", exception);
+                return null;
+            });
         // </InitialLoginSnippet>
     }
 
@@ -210,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void openHomeFragment(String userName) {
         HomeFragment fragment = HomeFragment.createInstance(userName);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+            .replace(R.id.fragment_container, fragment)
+            .commit();
         mNavigationView.setCheckedItem(R.id.nav_home);
     }
 
@@ -219,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void openCalendarFragment(String timeZone) {
         CalendarFragment fragment = CalendarFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+            .replace(R.id.fragment_container, fragment)
+            .commit();
         mNavigationView.setCheckedItem(R.id.nav_calendar);
     }
 
@@ -228,8 +217,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void openNewEventFragment(String timeZone) {
         NewEventFragment fragment = NewEventFragment.createInstance(timeZone);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+            .replace(R.id.fragment_container, fragment)
+            .commit();
         mNavigationView.setCheckedItem(R.id.nav_create_event);
     }
 
@@ -253,109 +242,89 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Silently sign in - used if there is already a
     // user account in the MSAL cache
     private void doSilentSignIn(boolean shouldAttemptInteractive) {
-        mAttemptInteractiveSignIn = shouldAttemptInteractive;
-        mAuthHelper.acquireTokenSilently(getAuthCallback());
+        mAuthHelper.acquireTokenSilently()
+            .thenAccept(authenticationResult -> {
+                handleSignInSuccess(authenticationResult);
+            })
+            .exceptionally(exception -> {
+                // Check the type of exception and handle appropriately
+                Throwable cause = exception.getCause();
+                if (cause instanceof MsalUiRequiredException) {
+                    Log.d("AUTH", "Interactive login required");
+                    if (shouldAttemptInteractive) doInteractiveSignIn();
+                } else if (cause instanceof MsalClientException) {
+                    MsalClientException clientException = (MsalClientException)cause;
+                    if (clientException.getErrorCode() == "no_current_account" ||
+                        clientException.getErrorCode() == "no_account_found") {
+                        Log.d("AUTH", "No current account, interactive login required");
+                        if (shouldAttemptInteractive) doInteractiveSignIn();
+                    }
+                } else {
+                    handleSignInFailure(cause);
+                }
+                hideProgressBar();
+                return null;
+            });
     }
 
     // Prompt the user to sign in
     private void doInteractiveSignIn() {
-        mAuthHelper.acquireTokenInteractively(this, getAuthCallback());
+        mAuthHelper.acquireTokenInteractively(this)
+            .thenAccept(authenticationResult -> {
+                handleSignInSuccess(authenticationResult);
+            })
+            .exceptionally(exception -> {
+                handleSignInFailure(exception);
+                hideProgressBar();
+                return null;
+            });
     }
 
+    // <HandleSignInSuccessSnippet>
     // Handles the authentication result
-    public AuthenticationCallback getAuthCallback() {
-        return new AuthenticationCallback() {
+    private void handleSignInSuccess(IAuthenticationResult authenticationResult) {
+        // Log the token for debug purposes
+        String accessToken = authenticationResult.getAccessToken();
+        Log.d("AUTH", String.format("Access token: %s", accessToken));
 
-            // <OnSuccessSnippet>
-            @Override
-            public void onSuccess(IAuthenticationResult authenticationResult) {
-                // Log the token for debug purposes
-                String accessToken = authenticationResult.getAccessToken();
-                Log.d("AUTH", String.format("Access token: %s", accessToken));
-
-                // Get Graph client and get user
-                GraphHelper graphHelper = GraphHelper.getInstance();
-                graphHelper.getUser(accessToken, getUserCallback());
-            }
-            // </OnSuccessSnippet>
-
-            @Override
-            public void onError(MsalException exception) {
-                // Check the type of exception and handle appropriately
-                if (exception instanceof MsalUiRequiredException) {
-                    Log.d("AUTH", "Interactive login required");
-                    if (mAttemptInteractiveSignIn) {
-                        doInteractiveSignIn();
-                    }
-
-                } else if (exception instanceof MsalClientException) {
-                    if (exception.getErrorCode() == "no_current_account" ||
-                        exception.getErrorCode() == "no_account_found") {
-                        Log.d("AUTH", "No current account, interactive login required");
-                        if (mAttemptInteractiveSignIn) {
-                            doInteractiveSignIn();
-                        }
-                    } else {
-                        // Exception inside MSAL, more info inside MsalError.java
-                        Log.e("AUTH", "Client error authenticating", exception);
-                    }
-                } else if (exception instanceof MsalServiceException) {
-                    // Exception when communicating with the auth server, likely config issue
-                    Log.e("AUTH", "Service error authenticating", exception);
-                }
-
-                hideProgressBar();
-            }
-
-            @Override
-            public void onCancel() {
-                // User canceled the authentication
-                Log.d("AUTH", "Authentication canceled");
-                hideProgressBar();
-            }
-        };
-    }
-
-    // <GetUserCallbackSnippet>
-    private ICallback<User> getUserCallback() {
-        return new ICallback<User>() {
-            @Override
-            public void success(User user) {
-                Log.d("AUTH", "User: " + user.displayName);
-
+        // Get Graph client and get user
+        GraphHelper graphHelper = GraphHelper.getInstance();
+        graphHelper.getUser()
+            .thenAccept(user -> {
                 mUserName = user.displayName;
                 mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
                 mUserTimeZone = user.mailboxSettings.timeZone;
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
+                runOnUiThread(() -> {
+                    hideProgressBar();
+                    setSignedInState(true);
+                    openHomeFragment(mUserName);
+                });
+            })
+            .exceptionally(exception -> {
+                Log.e("AUTH", "Error getting /me", exception);
 
-                        setSignedInState(true);
-                        openHomeFragment(mUserName);
-                    }
+                runOnUiThread(()-> {
+                    hideProgressBar();
+                    setSignedInState(false);
                 });
 
-            }
+                return null;
+            });
 
-            @Override
-            public void failure(ClientException ex) {
-                Log.e("AUTH", "Error getting /me", ex);
-                mUserName = "ERROR";
-                mUserEmail = "ERROR";
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
-
-                        setSignedInState(true);
-                        openHomeFragment(mUserName);
-                    }
-                });
-            }
-        };
     }
-    // </GetUserCallbackSnippet>
+    // </HandleSignInSuccessSnippet>
+
+    private void handleSignInFailure(Throwable exception) {
+        if (exception instanceof MsalServiceException) {
+            // Exception when communicating with the auth server, likely config issue
+            Log.e("AUTH", "Service error authenticating", exception);
+        } else if (exception instanceof MsalClientException) {
+            // Exception inside MSAL, more info inside MsalError.java
+            Log.e("AUTH", "Client error authenticating", exception);
+        } else {
+            Log.e("AUTH", "Unhandled exception authenticating", exception);
+        }
+    }
 }

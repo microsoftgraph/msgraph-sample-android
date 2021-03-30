@@ -33,7 +33,7 @@ Before moving on, install some additional dependencies that you will use later.
 
     ```Gradle
     packagingOptions {
-        pickFirst 'META-INF/jersey-module-version'
+        pickFirst 'META-INF/*'
     }
     ```
 
@@ -92,14 +92,18 @@ In this section you will create icons for the app's navigation menu, create a me
 
 #### Update application theme and layout
 
-1. Open the **app/res/values/styles.xml** file and replace `Theme.AppCompat.Light.DarkActionBar` with `Theme.AppCompat.Light.NoActionBar`.
-
-1. Add the following lines inside the `style` element.
+1. Open the **app/res/values/themes.xml** file and add the following lines inside the `style` element.
 
     ```xml
     <item name="windowActionBar">false</item>
     <item name="windowNoTitle">true</item>
-    <item name="android:statusBarColor">@android:color/transparent</item>
+    ```
+
+1. Open the **app/res/values-night/themes.xml** file and add the following lines inside the `style` element.
+
+    ```xml
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
     ```
 
 1. Right-click the **app/res/layout** folder.
@@ -108,7 +112,7 @@ In this section you will create icons for the app's navigation menu, create a me
 
 1. Name the file `nav_header` and change the **Root element** to `LinearLayout`, then select **OK**.
 
-1. Open the **nav_header.xml** file and select the **Text** tab. Replace the entire contents with the following.
+1. Open the **nav_header.xml** file and select the **Code** tab. Replace the entire contents with the following.
 
     :::code language="xml" source="../demo/GraphTutorial/app/src/main/res/layout/nav_header.xml":::
 

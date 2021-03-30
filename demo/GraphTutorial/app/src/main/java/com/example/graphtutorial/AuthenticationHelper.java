@@ -10,15 +10,22 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.microsoft.graph.authentication.BaseAuthenticationProvider;
 import com.microsoft.identity.client.AuthenticationCallback;
+import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.IPublicClientApplication;
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.exception.MsalException;
 
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
+
 // Singleton class - the app only needs a single instance
 // of PublicClientApplication
-public class AuthenticationHelper {
+public class AuthenticationHelper extends BaseAuthenticationProvider {
     private static AuthenticationHelper INSTANCE = null;
     private ISingleAccountPublicClientApplication mPCA = null;
     private String[] mScopes = { "User.Read", "MailboxSettings.Read", "Calendars.ReadWrite" };
@@ -40,11 +47,25 @@ public class AuthenticationHelper {
                 });
     }
 
-    public static synchronized void getInstance(Context ctx, IAuthenticationHelperCreatedListener listener) {
+    public static synchronized CompletableFuture<AuthenticationHelper> getInstance(Context ctx) {
+
         if (INSTANCE == null) {
-            INSTANCE = new AuthenticationHelper(ctx, listener);
+            CompletableFuture<AuthenticationHelper> future = new CompletableFuture<>();
+            INSTANCE = new AuthenticationHelper(ctx, new IAuthenticationHelperCreatedListener() {
+                @Override
+                public void onCreated(AuthenticationHelper authHelper) {
+                    future.complete(authHelper);
+                }
+
+                @Override
+                public void onError(MsalException exception) {
+                    future.completeExceptionally(exception);
+                }
+            });
+
+            return future;
         } else {
-            listener.onCreated(INSTANCE);
+            return CompletableFuture.completedFuture(INSTANCE);
         }
     }
 
@@ -59,14 +80,21 @@ public class AuthenticationHelper {
         return INSTANCE;
     }
 
-    public void acquireTokenInteractively(Activity activity, AuthenticationCallback callback) {
-        mPCA.signIn(activity, null, mScopes, callback);
+    public CompletableFuture<IAuthenticationResult> acquireTokenInteractively(Activity activity) {
+        CompletableFuture<IAuthenticationResult> future = new CompletableFuture<>();
+        mPCA.signIn(activity, null, mScopes, getAuthenticationCallback(future));
+
+        return future;
     }
 
-    public void acquireTokenSilently(AuthenticationCallback callback) {
+    public CompletableFuture<IAuthenticationResult> acquireTokenSilently() {
         // Get the authority from MSAL config
-        String authority = mPCA.getConfiguration().getDefaultAuthority().getAuthorityURL().toString();
-        mPCA.acquireTokenSilentAsync(mScopes, authority, callback);
+        String authority = mPCA.getConfiguration()
+            .getDefaultAuthority().getAuthorityURL().toString();
+
+        CompletableFuture<IAuthenticationResult> future = new CompletableFuture<>();
+        mPCA.acquireTokenSilentAsync(mScopes, authority, getAuthenticationCallback(future));
+        return future;
     }
 
     public void signOut() {
@@ -81,6 +109,37 @@ public class AuthenticationHelper {
                 Log.d("AUTHHELPER", "MSAL error signing out", exception);
             }
         });
+    }
+
+    private AuthenticationCallback getAuthenticationCallback(
+        CompletableFuture<IAuthenticationResult> future) {
+        return new AuthenticationCallback() {
+            @Override
+            public void onCancel() {
+                future.cancel(true);
+            }
+
+            @Override
+            public void onSuccess(IAuthenticationResult authenticationResult) {
+                future.complete(authenticationResult);
+            }
+
+            @Override
+            public void onError(MsalException exception) {
+                future.completeExceptionally(exception);
+            }
+        };
+    }
+
+    @Nonnull
+    @Override
+    public CompletableFuture<String> getAuthorizationTokenAsync(@Nonnull URL requestUrl) {
+        if (shouldAuthenticateRequestWithUrl(requestUrl) == true) {
+            return acquireTokenSilently()
+                .thenApply(result -> result.getAccessToken());
+        }
+
+        return CompletableFuture.completedFuture(null);
     }
 }
 // </AuthHelperSnippet>
