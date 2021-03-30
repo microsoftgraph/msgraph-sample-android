@@ -15,12 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.microsoft.graph.concurrency.ICallback;
-import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.models.extensions.Event;
-import com.microsoft.identity.client.AuthenticationCallback;
-import com.microsoft.identity.client.IAuthenticationResult;
-import com.microsoft.identity.client.exception.MsalException;
+
+import com.microsoft.graph.models.Event;
 
 import java.time.DayOfWeek;
 import java.time.ZoneId;
@@ -33,6 +29,7 @@ public class CalendarFragment extends Fragment {
     private static final String TIME_ZONE = "timeZone";
 
     private String mTimeZone;
+
     private List<Event> mEventList = null;
 
     public CalendarFragment() {}
@@ -63,47 +60,55 @@ public class CalendarFragment extends Fragment {
 
         showProgressBar();
 
-        // Get a current access token
-        AuthenticationHelper.getInstance()
-                .acquireTokenSilently(new AuthenticationCallback() {
-                    @Override
-                    public void onSuccess(IAuthenticationResult authenticationResult) {
-                        final GraphHelper graphHelper = GraphHelper.getInstance();
+        final GraphHelper graphHelper = GraphHelper.getInstance();
 
-                        ZoneId tzId = GraphToIana.getZoneIdFromWindows(mTimeZone);
-                        // Get midnight of the first day of the week (assumed Sunday)
-                        // in the user's timezone, then convert to UTC
-                        ZonedDateTime startOfWeek = ZonedDateTime.now(tzId)
-                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-                                .truncatedTo(ChronoUnit.DAYS)
-                                .withZoneSameInstant(ZoneId.of("UTC"));
+        ZoneId tzId = GraphToIana.getZoneIdFromWindows(mTimeZone);
+        // Get midnight of the first day of the week (assumed Sunday)
+        // in the user's timezone, then convert to UTC
+        ZonedDateTime startOfWeek = ZonedDateTime.now(tzId)
+            .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+            .truncatedTo(ChronoUnit.DAYS)
+            .withZoneSameInstant(ZoneId.of("UTC"));
 
-                        // Add 7 days to get the end of the week
-                        ZonedDateTime endOfWeek = startOfWeek.plusDays(7);
+        // Add 7 days to get the end of the week
+        ZonedDateTime endOfWeek = startOfWeek.plusDays(7);
 
-                        // Get the user's events
-                        graphHelper.getCalendarView(authenticationResult.getAccessToken(),
-                                startOfWeek,
-                                endOfWeek,
-                                mTimeZone,
-                                getCalendarViewCallback());
-                    }
+        // Get the user's events
+        graphHelper
+            .getCalendarView(startOfWeek, endOfWeek, mTimeZone)
+            .thenAccept(eventList -> {
+                mEventList = eventList;
 
-                    @Override
-                    public void onError(MsalException exception) {
-                        Log.e("AUTH", "Could not get token silently", exception);
-                        hideProgressBar();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        hideProgressBar();
-                    }
-                });
+                addEventsToList();
+                hideProgressBar();
+            })
+            .exceptionally(exception -> {
+                hideProgressBar();
+                Log.e("GRAPH", "Error getting events", exception);
+                Snackbar.make(getView(),
+                    exception.getMessage(),
+                    BaseTransientBottomBar.LENGTH_LONG).show();
+            });
 
         return view;
     }
     // </OnCreateViewSnippet>
+
+    // <AddEventsToListSnippet>
+    private void addEventsToList() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ListView eventListView = getView().findViewById(R.id.eventlist);
+
+                EventListAdapter listAdapter = new EventListAdapter(getActivity(),
+                    R.layout.event_list_item, mEventList);
+
+                eventListView.setAdapter(listAdapter);
+            }
+        });
+    }
+    // </AddEventsToListSnippet>
 
     // <ProgressBarSnippet>
     private void showProgressBar() {
@@ -130,43 +135,4 @@ public class CalendarFragment extends Fragment {
         });
     }
     // </ProgressBarSnippet>
-
-    // <AddEventsToListSnippet>
-    private void addEventsToList() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ListView eventListView = getView().findViewById(R.id.eventlist);
-
-                EventListAdapter listAdapter = new EventListAdapter(getActivity(),
-                        R.layout.event_list_item, mEventList);
-
-                eventListView.setAdapter(listAdapter);
-            }
-        });
-    }
-    // </AddEventsToListSnippet>
-
-    private ICallback<List<Event>> getCalendarViewCallback() {
-        return new ICallback<List<Event>>() {
-            // <SuccessSnippet>
-            @Override
-            public void success(List<Event> eventList) {
-                mEventList = eventList;
-
-                addEventsToList();
-                hideProgressBar();
-            }
-            // </SuccessSnippet>
-
-            @Override
-            public void failure(ClientException ex) {
-                hideProgressBar();
-                Log.e("GRAPH", "Error getting events", ex);
-                Snackbar.make(getView(),
-                    ex.getMessage(),
-                    BaseTransientBottomBar.LENGTH_LONG).show();
-            }
-        };
-    }
 }

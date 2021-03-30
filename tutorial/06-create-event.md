@@ -5,12 +5,12 @@ In this section you will add the ability to create events on the user's calendar
 1. Open **GraphHelper** and add the following `import` statements to the top of the file.
 
     ```java
-    import com.microsoft.graph.models.extensions.Attendee;
-    import com.microsoft.graph.models.extensions.DateTimeTimeZone;
-    import com.microsoft.graph.models.extensions.EmailAddress;
-    import com.microsoft.graph.models.extensions.ItemBody;
-    import com.microsoft.graph.models.generated.AttendeeType;
-    import com.microsoft.graph.models.generated.BodyType;
+    import com.microsoft.graph.models.Attendee;
+    import com.microsoft.graph.models.DateTimeTimeZone;
+    import com.microsoft.graph.models.EmailAddress;
+    import com.microsoft.graph.models.ItemBody;
+    import com.microsoft.graph.models.AttendeeType;
+    import com.microsoft.graph.models.BodyType;
     ```
 
 1. Add the following function to the `GraphHelper` class to create a new event.
@@ -39,12 +39,6 @@ In this section you will add the ability to create events on the user's calendar
     import com.google.android.material.snackbar.BaseTransientBottomBar;
     import com.google.android.material.snackbar.Snackbar;
     import com.google.android.material.textfield.TextInputLayout;
-    import com.microsoft.graph.concurrency.ICallback;
-    import com.microsoft.graph.core.ClientException;
-    import com.microsoft.graph.models.extensions.Event;
-    import com.microsoft.identity.client.AuthenticationCallback;
-    import com.microsoft.identity.client.IAuthenticationResult;
-    import com.microsoft.identity.client.exception.MsalException;
     import java.time.ZoneId;
     import java.time.ZonedDateTime;
     ```
