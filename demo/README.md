@@ -4,7 +4,7 @@
 
 To run the completed project in this folder, you need the following:
 
-- [Android Studio](https://developer.android.com/studio/) installed on your development machine. (**Note:** This tutorial was written with Android Studio version 3.6.2 and the Android 10.0 SDK. The steps in this guide may work with other versions, but that has not been tested.)
+- [Android Studio](https://developer.android.com/studio/) installed on your development machine. (**Note:** This tutorial was written with Android Studio version 4.1.3 and the Android 10.0 SDK. The steps in this guide may work with other versions, but that has not been tested.)
 - Either a personal Microsoft account with a mailbox on Outlook.com, or a Microsoft work or school account.
 
 If you don't have a Microsoft account, there are a couple of options to get a free account:
@@ -18,7 +18,7 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
 1. Select **Azure Active Directory** in the left-hand navigation, then select **App registrations** under **Manage**.
 
-    ![A screenshot of the App registrations ](../../tutorial/images/aad-portal-app-registrations.png)
+    ![A screenshot of the App registrations ](../tutorial/images/aad-portal-app-registrations.png)
 
 1. Select **New registration**. On the **Register an application** page, set the values as follows.
 
@@ -26,11 +26,11 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
     - Set **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts**.
     - Under **Redirect URI**, set the dropdown to **Public client/native (mobile & desktop)** and set the value to `msauth://YOUR_PACKAGE_NAME/callback`, replacing `YOUR_PACKAGE_NAME` with your project's package name.
 
-    ![A screenshot of the Register an application page](../../tutorial/images/aad-register-an-app.png)
+    ![A screenshot of the Register an application page](../tutorial/images/aad-register-an-app.png)
 
 1. Select **Register**. On the **Android Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
 
-    ![A screenshot of the application ID of the new app registration](../../tutorial/images/aad-application-id.png)
+    ![A screenshot of the application ID of the new app registration](../tutorial/images/aad-application-id.png)
 
 ## Configure the sample
 
