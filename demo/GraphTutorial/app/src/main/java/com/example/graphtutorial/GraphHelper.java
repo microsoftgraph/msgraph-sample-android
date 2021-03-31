@@ -55,65 +55,52 @@ public class GraphHelper {
 
     // <GetEventsSnippet>
     public CompletableFuture<List<Event>> getCalendarView(ZonedDateTime viewStart,
-                                                                  ZonedDateTime viewEnd,
-                                                                  String timeZone) {
+                                                          ZonedDateTime viewEnd,
+                                                          String timeZone) {
 
         final List<Option> options = new LinkedList<Option>();
-        options.add(new QueryOption("startDateTime", viewStart.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
-        options.add(new QueryOption("endDateTime", viewEnd.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        options.add(new QueryOption("startDateTime",
+            viewStart.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        options.add(new QueryOption("endDateTime",
+            viewEnd.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
 
         // Start and end times adjusted to user's time zone
-        options.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timeZone + "\""));
+        options.add(new HeaderOption("Prefer",
+            "outlook.timezone=\"" + timeZone + "\""));
 
         final List<Event> allEvents = new LinkedList<Event>();
         // Create a separate list of options for the paging requests
         // paging request should not include the query parameters from the initial
         // request, but should include the headers.
         final List<Option> pagingOptions = new LinkedList<Option>();
-        pagingOptions.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timeZone + "\""));
+        pagingOptions.add(new HeaderOption("Prefer",
+            "outlook.timezone=\"" + timeZone + "\""));
 
-        final CompletableFuture<List<Event>> future = new CompletableFuture<>();
-
-        mClient.me().calendarView()
+        return mClient.me().calendarView()
             .buildRequest(options)
             .select("subject,organizer,start,end")
             .orderBy("start/dateTime")
-            .top(25)
+            .top(5)
             .getAsync()
-            .thenAccept(eventPage -> {
-                processPage(eventPage, allEvents, pagingOptions, future);
-            })
-            .exceptionally(exception -> {
-                future.completeExceptionally(exception);
-                return null;
-            });
-
-        return future;
+            .thenCompose(eventPage -> processPage(eventPage, allEvents, pagingOptions));
     }
 
-    private void processPage(EventCollectionPage currentPage,
+    private CompletableFuture<List<Event>> processPage(EventCollectionPage currentPage,
                              List<Event> eventList,
-                             List<Option> options,
-                             CompletableFuture<List<Event>> future) {
+                             List<Option> options) {
         eventList.addAll(currentPage.getCurrentPage());
 
         // Check if there is another page of results
         EventCollectionRequestBuilder nextPage = currentPage.getNextPage();
         if (nextPage != null) {
             // Request the next page and repeat
-            nextPage.buildRequest(options)
+            return nextPage.buildRequest(options)
                 .getAsync()
-                .thenAccept(eventPage -> {
-                    processPage(eventPage, eventList, options, future);
-                })
-                .exceptionally(exception -> {
-                    future.completeExceptionally(exception);
-                    return null;
-                });
+                .thenCompose(eventPage -> processPage(eventPage, eventList, options));
         } else {
             // No more pages, complete the future
             // with the complete list
-            future.complete(eventList);
+            return CompletableFuture.completedFuture(eventList);
         }
     }
 
