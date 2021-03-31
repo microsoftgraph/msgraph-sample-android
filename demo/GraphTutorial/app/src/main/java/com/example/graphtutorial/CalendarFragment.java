@@ -88,6 +88,7 @@ public class CalendarFragment extends Fragment {
                 Snackbar.make(getView(),
                     exception.getMessage(),
                     BaseTransientBottomBar.LENGTH_LONG).show();
+                return null;
             });
 
         return view;
