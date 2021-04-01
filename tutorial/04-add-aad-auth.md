@@ -211,7 +211,7 @@ In this section you will create a helper class to hold all of the calls to Micro
             return mClient.me().buildRequest()
                 .select("displayName,mail,mailboxSettings,userPrincipalName")
                 .getAsync();
-    }
+        }
     }
     ```
 
