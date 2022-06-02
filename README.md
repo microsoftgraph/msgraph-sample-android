@@ -1,4 +1,4 @@
-# Microsoft Graph Sample Android app
+# Microsoft Graph sample Android app
 
 This sample demonstrates how to use the Microsoft Graph Java SDK to access data in Office 365 from native mobile Android applications.
 
