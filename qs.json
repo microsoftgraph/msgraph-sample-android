@@ -1,7 +1,0 @@
-{
-  "sourceDirectory": ".\\demo",
-  "exampleConfigFile": ".\\GraphTutorial\\msal_config.json.example",
-  "configFile": ".\\app\\src\\main\\res\\raw\\msal_config.json",
-  "archiveFile": "AndroidQuickStart.zip",
-  "zipReadMe": ".\\README.md"
-}
