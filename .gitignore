@@ -88,6 +88,3 @@ lint/tmp/
 .settings/
 
 msal_config.json
-
-AndroidQuickStart.zip
-tutorial/images/raw/
