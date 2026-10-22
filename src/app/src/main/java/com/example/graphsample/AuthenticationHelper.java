@@ -9,7 +9,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.microsoft.graph.authentication.BaseAuthenticationProvider;
+import com.microsoft.kiota.RequestInformation;
+import com.microsoft.kiota.authentication.AllowedHostsValidator;
+import com.microsoft.kiota.authentication.AuthenticationProvider;
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.IPublicClientApplication;
@@ -18,14 +20,18 @@ import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.SignInParameters;
 import com.microsoft.identity.client.exception.MsalException;
 
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 // Singleton class - the app only needs a single instance
 // of PublicClientApplication
-public class AuthenticationHelper extends BaseAuthenticationProvider {
+public class AuthenticationHelper implements AuthenticationProvider {
     private static AuthenticationHelper INSTANCE = null;
+    private static final AllowedHostsValidator ALLOWED_HOSTS =
+            new AllowedHostsValidator("graph.microsoft.com");
     private ISingleAccountPublicClientApplication mPCA = null;
     private final String[] mScopes = { "User.Read", "MailboxSettings.Read", "Calendars.ReadWrite" };
 
@@ -147,15 +153,17 @@ public class AuthenticationHelper extends BaseAuthenticationProvider {
         };
     }
 
-    @NonNull
     @Override
-    public CompletableFuture<String> getAuthorizationTokenAsync(@NonNull URL requestUrl) {
-        if (shouldAuthenticateRequestWithUrl(requestUrl)) {
-            return acquireTokenSilently()
-                    .thenApply(IAuthenticationResult::getAccessToken);
+    public void authenticateRequest(@NonNull RequestInformation request,
+                                    Map<String, Object> additionalAuthenticationContext) {
+        try {
+            URI requestUri = request.getUri();
+            if (requestUri != null && ALLOWED_HOSTS.isUrlHostValid(requestUri)) {
+                String accessToken = acquireTokenSilently().join().getAccessToken();
+                request.headers.tryAdd("Authorization", "Bearer " + accessToken);
+            }
+        } catch (URISyntaxException exception) {
+            throw new IllegalArgumentException("Unable to parse request URL", exception);
         }
-
-        return CompletableFuture.completedFuture(null);
     }
 }
-
