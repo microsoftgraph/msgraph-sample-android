@@ -60,11 +60,12 @@ public class EventListAdapter extends ArrayAdapter<Event> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.subject.setText(event.subject);
-        Objects.requireNonNull(event.organizer);
-        holder.organizer.setText(Objects.requireNonNull(event.organizer.emailAddress).name);
-        holder.start.setText(getLocalDateTimeString(Objects.requireNonNull(event.start)));
-        holder.end.setText(getLocalDateTimeString(Objects.requireNonNull(event.end)));
+        holder.subject.setText(event.getSubject());
+        Objects.requireNonNull(event.getOrganizer());
+        holder.organizer.setText(
+                Objects.requireNonNull(event.getOrganizer().getEmailAddress()).getName());
+        holder.start.setText(getLocalDateTimeString(Objects.requireNonNull(event.getStart())));
+        holder.end.setText(getLocalDateTimeString(Objects.requireNonNull(event.getEnd())));
 
         return convertView;
     }
@@ -73,8 +74,8 @@ public class EventListAdapter extends ArrayAdapter<Event> {
     // a LocalDateTime, then return a formatted string
     @NonNull
     private String getLocalDateTimeString(@NonNull DateTimeTimeZone dateTime) {
-        ZonedDateTime localDateTime = LocalDateTime.parse(dateTime.dateTime)
-                .atZone(GraphToIana.getZoneIdFromWindows(dateTime.timeZone));
+        ZonedDateTime localDateTime = LocalDateTime.parse(dateTime.getDateTime())
+                .atZone(GraphToIana.getZoneIdFromWindows(dateTime.getTimeZone()));
 
         return String.format("%s %s",
                 localDateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),

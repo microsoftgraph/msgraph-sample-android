@@ -278,10 +278,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GraphHelper graphHelper = GraphHelper.getInstance();
         graphHelper.getUser()
                 .thenAccept(user -> {
-                    mUserName = user.displayName;
-                    mUserEmail = user.mail == null ? user.userPrincipalName : user.mail;
-                    mUserTimeZone = (user.mailboxSettings == null || user.mailboxSettings.timeZone == null)
-                            ? "UTC": user.mailboxSettings.timeZone;
+                    mUserName = user.getDisplayName();
+                    mUserEmail = user.getMail() == null ? user.getUserPrincipalName() : user.getMail();
+                    mUserTimeZone = (user.getMailboxSettings() == null
+                            || user.getMailboxSettings().getTimeZone() == null)
+                            ? "UTC" : user.getMailboxSettings().getTimeZone();
 
                     runOnUiThread(() -> {
                         hideProgressBar();
