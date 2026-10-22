@@ -125,7 +125,7 @@ public class GraphHelper {
             for (String attendeeEmail : attendees) {
                 Attendee newAttendee = new Attendee();
                 // Set the attendee type, in this case required
-                newAttendee.setType(AttendeeType.REQUIRED);
+                newAttendee.setType(AttendeeType.Required);
                 // Create a new EmailAddress object with the address
                 // provided
                 newAttendee.setEmailAddress(new EmailAddress());
@@ -141,7 +141,7 @@ public class GraphHelper {
             // Set the content
             newEvent.getBody().setContent(body);
             // Specify content is plain text
-            newEvent.getBody().setContentType(BodyType.TEXT);
+            newEvent.getBody().setContentType(BodyType.Text);
         }
 
         return CompletableFuture.supplyAsync(() -> mClient.me().events().post(newEvent));
